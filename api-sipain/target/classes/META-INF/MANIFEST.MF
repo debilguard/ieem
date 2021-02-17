@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: api-sipain
-Implementation-Version: 1.0.0
-Built-By: jhsolano
-Implementation-Vendor-Id: com.api.sipain
-Build-Jdk: 1.8.0_281
-Implementation-URL: https://spring.io/projects/spring-boot/api-sipain
-Created-By: Maven Integration for Eclipse
-
