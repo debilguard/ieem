@@ -14,4 +14,10 @@ public class apiController {
 		return "Get method working";
 	}
 	
+	@GetMapping("/v2")
+	public String v2()
+	{	
+		return "Version 2 service";
+	}
+	
 }
