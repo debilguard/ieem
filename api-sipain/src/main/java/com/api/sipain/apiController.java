@@ -20,4 +20,10 @@ public class apiController {
 		return "Version 2 service";
 	}
 	
+	@GetMapping("/v3")
+	public String v3()
+	{	
+		return "Version 3 service";
+	}
+	
 }
