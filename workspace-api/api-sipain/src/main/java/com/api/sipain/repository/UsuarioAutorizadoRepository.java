@@ -10,25 +10,28 @@ import org.springframework.stereotype.Repository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.api.sipain.entities.UsuariosAutorizados;
+import com.api.sipain.entities.UsuarioAutorizado;
 
 @Repository
-public class UsuariosAutorizadosRepository {
+public class UsuarioAutorizadoRepository {
 	
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 	
-	  public UsuariosAutorizados getUserDetails(String username) {
-	      Collection<GrantedAuthority> listOfgrantedAuthorities = new ArrayList<>();
+	  public UsuarioAutorizado getUserDetails(String username) {
+	      
+		  Collection<GrantedAuthority> listOfgrantedAuthorities = new ArrayList<>();
 	      String userSQLQuery = "SELECT username,password FROM tsipain_api_usuario WHERE USERNAME=?"; 
-		  List<UsuariosAutorizados> list = jdbcTemplate.query(userSQLQuery, new String[] { username },
+		  
+	      List<UsuarioAutorizado> list = jdbcTemplate.query(userSQLQuery, new String[] { username },
 	         (final ResultSet rs, final int rowNum) -> {
 	         
-	         final UsuariosAutorizados user = new UsuariosAutorizados();
+	         final UsuarioAutorizado user = new UsuarioAutorizado();
 	         user.setUsername(username);
 	         user.setPassword(rs.getString("PASSWORD"));
 	         return user;
 	      });
+	      
 	      if (list.size() > 0) {
 	         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_SYSTEMADMIN");
 	         listOfgrantedAuthorities.add(grantedAuthority);

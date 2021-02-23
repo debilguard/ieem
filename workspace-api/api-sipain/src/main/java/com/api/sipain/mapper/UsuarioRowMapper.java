@@ -21,10 +21,9 @@ public class UsuarioRowMapper implements RowMapper<Usuario> {
 	
 	public Usuario mapRow(ResultSet rs, int rowNum) throws SQLException {
 		Usuario u = (new BeanPropertyRowMapper<>(Usuario.class)).mapRow(rs,rowNum);
-		 
 		//List<Transaccion> t = (List<Transaccion>) this.transaccionMapper.mapRow(rs, rowNum);
 		//u.setTransacciones(t);
-		
+	 
 		return u;  
 	} 
 }

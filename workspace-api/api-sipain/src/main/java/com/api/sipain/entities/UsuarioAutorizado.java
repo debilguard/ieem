@@ -1,14 +1,17 @@
+
 package com.api.sipain.entities;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
 import org.springframework.security.core.GrantedAuthority;
 
-public class UsuariosAutorizados {
-	   private String username;
-	   private String password;
-	   private Collection<GrantedAuthority> listOfgrantedAuthorities = new ArrayList<>();
+public class UsuarioAutorizado {
+	   
+	private String username;
+	   
+	private String password;
+	   
+	private Collection<GrantedAuthority> listOfgrantedAuthorities = new ArrayList<>();
 	
 	   public String getUsername() {
 		return username;
