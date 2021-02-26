@@ -1,4 +1,4 @@
-package com.api.sipain.repository;
+/*package com.api.sipain.repository;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -38,3 +38,4 @@ public class UsuariosAutorizadosRepository {
 	      return null;
 	   } 
 }
+*/

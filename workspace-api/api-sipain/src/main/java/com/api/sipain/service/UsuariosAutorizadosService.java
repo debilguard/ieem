@@ -1,4 +1,4 @@
-package com.api.sipain.service;
+/*package com.api.sipain.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,4 +28,4 @@ public class UsuariosAutorizadosService implements UserDetailsService{
 	      }
 	   }
 
-}
+}*/

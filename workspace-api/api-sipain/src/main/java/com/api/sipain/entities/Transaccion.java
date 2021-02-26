@@ -6,7 +6,14 @@ import java.util.Date;
  
 public class Transaccion {
 
-	 
+	private String username;
+	public String getusername() {
+		return username;
+	}
+
+	public void setusername(String username) {
+		username = username;
+	}
 	private Integer Folio;
 	private Date FechaTransaccion;
 	private String Transaccion;

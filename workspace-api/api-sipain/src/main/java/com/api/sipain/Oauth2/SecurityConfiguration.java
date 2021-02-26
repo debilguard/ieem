@@ -1,4 +1,4 @@
-package com.api.sipain.Oauth2;
+/*package com.api.sipain.Oauth2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +37,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	      auth.userDetailsService(usersService).passwordEncoder(encoder());
 	   }
 	   
+	   */
 	   /*@Override
 	   protected void configure(HttpSecurity http) throws Exception {
 	      http.authorizeRequests()
@@ -46,7 +47,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	      .sessionManagement()
 	      .sessionCreationPolicy(SessionCreationPolicy.NEVER);
 	   }*/
-	   
+	   /*
 	   @Override
 	    protected void configure(HttpSecurity http) throws Exception {
 	        http.cors()
@@ -75,3 +76,4 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	      return super.authenticationManagerBean();
 	   }
 }
+*/

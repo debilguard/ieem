@@ -1,4 +1,4 @@
-package com.api.sipain.Oauth2;
+/*package com.api.sipain.Oauth2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -76,3 +76,4 @@ public class ConfigOAuth2 extends AuthorizationServerConfigurerAdapter{
 	        return defaultTokenServices;
 	    }
 }
+*/

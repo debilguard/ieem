@@ -60,4 +60,13 @@ public class tsipainapiusuario {
 	public void setEstatus(Integer estatus) {
 		this.estatus = estatus;
 	}
+	
+	Transacciones transacciones;
+	public Transacciones getTransacciones() {
+		return transacciones;
+	}
+	public void setTransacciones(Transacciones transacciones) {
+		this.transacciones = transacciones;
+	}
+
 }

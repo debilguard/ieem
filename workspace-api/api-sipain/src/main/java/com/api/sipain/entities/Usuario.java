@@ -18,6 +18,14 @@ import javax.persistence.SqlResultSetMapping;
 		super(); 
 	}
 	 
+	Transacciones transacciones;
+	public Transacciones getTransacciones() {
+		return transacciones;
+	}
+	public void setTransacciones(Transacciones transacciones) {
+		this.transacciones = transacciones;
+	}
+
 	private String NombreUsuario;
 	private String Password;
 	private String Nombre;
@@ -25,15 +33,6 @@ import javax.persistence.SqlResultSetMapping;
 	private Date FechaDeAlta;
 	private Date FechaDeBaja;
 	private Integer Estatus; 
-	 
-	private List<Transaccion> Transaccion;
- 
-	public List<Transaccion> getTransacciones() {
-		return Transaccion;
-	}
-	
-	
-	public void setTransacciones(List<Transaccion> transacciones) { Transaccion = transacciones; }
 	 
 	public String getPassword() {
 		return Password;

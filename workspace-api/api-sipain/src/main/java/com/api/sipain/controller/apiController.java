@@ -40,4 +40,9 @@ public class apiController {
 	{	
 		 return sampleService.getAll(); 
 	}
+	
+	@GetMapping("/api/userlist")
+	public List<tsipainapiusuario> getUserList() {
+		return usuarioService.getUsersList();
+	}
 }

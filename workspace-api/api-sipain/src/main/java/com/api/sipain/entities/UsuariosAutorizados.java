@@ -1,4 +1,4 @@
-package com.api.sipain.entities;
+/*package com.api.sipain.entities;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,4 +28,4 @@ public class UsuariosAutorizados {
 	public void setListOfgrantedAuthorities(Collection<GrantedAuthority> listOfgrantedAuthorities) {
 		this.listOfgrantedAuthorities = listOfgrantedAuthorities;
 	}
-}
+}*/

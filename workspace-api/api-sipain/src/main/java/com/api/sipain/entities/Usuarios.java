@@ -1,31 +1,15 @@
-/*package com.api.sipain.entities;
+package com.api.sipain.entities;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import org.springframework.security.core.GrantedAuthority;
+import java.util.*;
 
 public class Usuarios {
-	  private String username;
-	   private String password;
-	   private Collection<GrantedAuthority> listOfgrantedAuthorities = new ArrayList<>();
-	
-	   public String getUsername() {
-		return username;
+	private List<Usuario> usuariosList = new ArrayList<Usuario>();
+	public void setusuariosList(ArrayList<Usuario> users) {
+		this.usuariosList = users;
 	}
-	public void setUsername(String username) {
-		this.username = username;
+	public List<Usuario> getusuariosList() {
+		return usuariosList;
 	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	public Collection<GrantedAuthority> getListOfgrantedAuthorities() {
-		return listOfgrantedAuthorities;
-	}
-	public void setListOfgrantedAuthorities(Collection<GrantedAuthority> listOfgrantedAuthorities) {
-		this.listOfgrantedAuthorities = listOfgrantedAuthorities;
-	} 
 }
-*/

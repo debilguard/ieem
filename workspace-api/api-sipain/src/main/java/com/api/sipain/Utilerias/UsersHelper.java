@@ -1,4 +1,4 @@
-package com.api.sipain.Utilerias;
+/*package com.api.sipain.Utilerias;
 
 import org.springframework.security.core.userdetails.User;
 import com.api.sipain.entities.UsuariosAutorizados;
@@ -14,3 +14,4 @@ public class UsersHelper extends User {
 	    		);
 	   }
 }
+*/
