@@ -21,10 +21,8 @@ import javax.persistence.SqlResultSetMapping;
 	private String NombreUsuario;
 	private String Password;
 	private String Nombre;
-	private String Apellidos;
-	private Date FechaDeAlta;
-	private Date FechaDeBaja;
-	private Integer Estatus; 
+	private String Apellidos; 
+	private Integer Activo; 
 	 
 	private List<Transaccion> Transaccion;
  
@@ -53,28 +51,21 @@ import javax.persistence.SqlResultSetMapping;
 	public void setApellidos(String ppellidos) {
 		Apellidos = ppellidos;
 	}
-	public Date getFechaDeAlta() {
-		return FechaDeAlta;
-	}
-	public void setFechaDeAlta(Date fechaDeAlta) {
-		FechaDeAlta = fechaDeAlta;
-	}
-	public Date getFechaDeBaja() {
-		return FechaDeBaja;
-	}
-	public void setFechaDeBaja(Date fechaDeBaja) {
-		FechaDeBaja = fechaDeBaja;
-	}
-	public Integer getEstatus() {
-		return Estatus;
-	}
-	public void setEstatus(Integer estatus) {
-		Estatus = estatus;
-	}
+	 
 	public String getNombreUsuario() {
 		return NombreUsuario;
 	}
 	public void setNombreUsuario(String nombreUsuario) {
 		NombreUsuario = nombreUsuario;
+	}
+
+
+	public Integer getActivo() {
+		return Activo;
+	}
+
+
+	public void setActivo(Integer activo) {
+		Activo = activo;
 	}	   
 }

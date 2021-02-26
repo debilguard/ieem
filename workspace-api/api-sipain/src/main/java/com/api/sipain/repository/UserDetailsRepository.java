@@ -10,23 +10,23 @@ import org.springframework.stereotype.Repository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.api.sipain.entities.UsuarioAutorizado;
+import com.api.sipain.entities.UserDetailsAuthorization;
 
 @Repository
-public class UsuarioAutorizadoRepository {
+public class UserDetailsRepository {
 	
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 	
-	  public UsuarioAutorizado getUserDetails(String username) {
+	  public UserDetailsAuthorization getUserDetails(String username) {
 	      
 		  Collection<GrantedAuthority> listOfgrantedAuthorities = new ArrayList<>();
 	      String userSQLQuery = "SELECT username,password FROM tsipain_api_usuario WHERE USERNAME=?"; 
 		  
-	      List<UsuarioAutorizado> list = jdbcTemplate.query(userSQLQuery, new String[] { username },
+	      List<UserDetailsAuthorization> list = jdbcTemplate.query(userSQLQuery, new String[] { username },
 	         (final ResultSet rs, final int rowNum) -> {
 	         
-	         final UsuarioAutorizado user = new UsuarioAutorizado();
+	         final UserDetailsAuthorization user = new UserDetailsAuthorization();
 	         user.setUsername(username);
 	         user.setPassword(rs.getString("PASSWORD"));
 	         return user;
@@ -41,3 +41,4 @@ public class UsuarioAutorizadoRepository {
 	      return null;
 	   } 
 }
+
