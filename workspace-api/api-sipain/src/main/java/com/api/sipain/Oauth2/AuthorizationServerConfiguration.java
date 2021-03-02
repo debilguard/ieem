@@ -20,10 +20,10 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @Configurable
 @EnableAuthorizationServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@Import(ServerSecurityConfig.class)
+@Import(WebSecurityConfiguration.class)
 
 
-public class AuthServerOAuth2Config extends AuthorizationServerConfigurerAdapter {
+public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
 	private String clientId = "api";
 	private String clientSecret = "api#@ieem";
@@ -79,8 +79,11 @@ public class AuthServerOAuth2Config extends AuthorizationServerConfigurerAdapter
     }
 
     @Override
-    public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
-        oauthServer.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()").passwordEncoder(oauthClientPasswordEncoder);
+    public void configure(AuthorizationServerSecurityConfigurer security) {
+        security.tokenKeyAccess("permitAll()")
+        .checkTokenAccess("isAuthenticated()")
+        .passwordEncoder(oauthClientPasswordEncoder)
+        .allowFormAuthenticationForClients();
     }
     
     @Override

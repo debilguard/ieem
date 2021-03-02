@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,7 +20,7 @@ import com.api.sipain.Utilities.Encoders;
 @EnableWebSecurity
 @Order(SecurityProperties.BASIC_AUTH_ORDER)
 @Import(Encoders.class)
-public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -36,5 +37,25 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(userPasswordEncoder);
+    }
+    
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+        /*
+    	http.requestMatchers()
+                .antMatchers(SECURED_PATTERN)
+                .and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.POST, SECURED_PATTERN)
+                .access(SECURED_WRITE_SCOPE)
+                .anyRequest()
+                .access(SECURED_READ_SCOPE);*/
+    	http.csrf().disable()
+    	.anonymous().disable()
+    	.authorizeRequests()
+    	.antMatchers("/oauth/","/oauth/token","/oauth/**")
+    	.permitAll()
+    	.anyRequest()
+    	.authenticated();
     }
 }
