@@ -29,7 +29,6 @@ import com.api.sipain.entities.Domicilio;
 import com.api.sipain.entities.Rfc;
 import com.api.sipain.entities.CorreoElectronico;
 import com.api.sipain.entities.TelefonoPersonal;
-import com.api.sipain.entities.tsipainapiusuario;
 import com.api.sipain.entities.ClaveValor;
 import com.api.sipain.entities.Escolaridad;
 import com.api.sipain.entities.TelefonoGeneral;
@@ -49,26 +48,6 @@ public class DeclaracionRepository {
 	EntityManagerFactory emf;
 	
 	public List<Declaracion> getDeclaracionesList() {
-		/*
-		String str="SELECT";
-		str += " d.RFC, d.HOMOCLAVE, d.NOMBRE, d.PRIMER_APELLIDO, d.SEGUNDO_APELLIDO, d.CORREO_ELECTRONICO_INSTITUCIO, d.CORREO_ELECTRONICO_PERSONAL";
-		str += " , d.NUMERO_TELEFONICO_DE_CASA, d.NUMERO_CELULAR_PERSONAL, d.OTRO_REGIMEN_MATRIMONIAL, d.ACLARACIONES_OBSERVACIONES";
-		str += " , d.ID_ESTADO_CIVIL, d.ID_REGIMEN_MATRIMONIAL";
-		str += " , nac.pais NACIONALIDAD";
-		str += " , ad.AREA_DE_ADSCRIPCION";
-		str += " , pais.SIGLAS_PAIS";
-		str += " , ec.ESTADO_CIVIL";
-		str += " , rm.REGIMEN_MATRIMONIAL";
-		str += " FROM tsipain_declaracion d";
-		//str += " INNER JOIN tsipain_tipo_de_grupo gpo on gpo.id_tipo_de_grupo = d.id_tipo_de_grupo";
-		str += " INNER JOIN tsipain_area_de_adscripcion ad on ad.id_area_de_adscripcion = d.id_area_de_adscripcion";
-		str += " INNER JOIN tsipain_pais pais on pais.id_pais = d.id_pais";
-		str += " INNER JOIN tsipain_estado_civil ec on ec.id_estado_civil = d.id_estado_civil";
-		str += " INNER JOIN tsipain_regimen_matrimonial rm on rm.id_regimen_matrimonial = d.id_regimen_matrimonial";
-		str += " INNER JOIN tsipain_pais nac on nac.id_pais = d.id_nacionalidad";
-		
-		str += " WHERE d.id_tipo_de_declaracion = 1"; // 1. Inicial; 2. Conclusión; 3. Modificación
-		*/
 		String str="SELECT * FROM V_DECLARACION_INDIVIDUAL"; // 1. Inicial; 2. Conclusión; 3. Modificación
 		return jdbcTemplate.query(str, new ResultSetExtractor<List<Declaracion>>() {
 			@Override
@@ -80,6 +59,8 @@ public class DeclaracionRepository {
 				Map<String, Domicilio> rfcOrdenDomicilioMap = new HashMap<String, Domicilio>();
 				Map<String, DatosCurriculares> rfcDatosCurricularesMap = new HashMap<String, DatosCurriculares>();
 				Map<String, Escolaridad> rfcOrdenEscolaridadMap = new HashMap<String, Escolaridad>();
+				Map<String, DatosEmpleoCargoComision> rfcDatosEmpleoMap = new HashMap<String, DatosEmpleoCargoComision>();
+				Map<String, Domicilio> rfcOrdenDomicilioEmpleoMap = new HashMap<String, Domicilio>();
 				
 				while (rs.next()) {
 					String rfcDeclaracion = rs.getString("RFC");
@@ -96,7 +77,6 @@ public class DeclaracionRepository {
 						Rfc rfc = new Rfc();
 						TelefonoPersonal telefono = new TelefonoPersonal();
 						
-						//DatosCurriculares datosCurricularesDeclarante = new DatosCurriculares();
 						//DatosEmpleoCargoComision datosEmpleoCargoComision = new DatosEmpleoCargoComision();
 						//ExperienciaLaboral experienciaLaboral = new ExperienciaLaboral();
 						
@@ -223,7 +203,72 @@ public class DeclaracionRepository {
 						datosCurricularesDeclarante.getEscolaridad().add(escolaridad);
 					}
 					datosCurricularesDeclarante.setAclaracionesObservaciones(rs.getString("ESC_ACLARACIONES_OBSERVACIONES")); // Pregunta: Cada escolaridad tiene sus observaciones ¿porque hay solo uno?
-				}
+					
+					// Datos empleo/cargo/comisión
+					DatosEmpleoCargoComision datosEmpleoCargoComision = rfcDatosEmpleoMap.get(rfcDeclaracion);
+					if (datosEmpleoCargoComision == null) {
+						datosEmpleoCargoComision = new DatosEmpleoCargoComision();
+						rfcDatosEmpleoMap.put(rfcDeclaracion, datosEmpleoCargoComision);
+						
+						declaracion.getSituacionPatrimonial().setDatosEmpleoCargoComision(datosEmpleoCargoComision);
+					}
+					
+					TelefonoGeneral telefonoOficina = new TelefonoGeneral();
+					
+					telefonoOficina.setTelefono(rs.getString("TEL_DE_OFICINA_Y_EXTENSION")); // TODO: Extraer el teléfono
+					telefonoOficina.setExtension(rs.getString("TEL_DE_OFICINA_Y_EXTENSION")); // TODO: Extraer la extensión
+					
+					datosEmpleoCargoComision.setAclaracionesObservaciones(rs.getString("EMP_ACLARACIONES_OBSERVACIONES"));
+					datosEmpleoCargoComision.setAmbitoPublico(rs.getString("EMP_AMBITO_PUBLICO"));
+					datosEmpleoCargoComision.setAreaAdscripcion(rs.getString("EMP_AREA_DE_ADSCRIPCION"));
+					datosEmpleoCargoComision.setContratadoPorHonorarios(rs.getString("CONTRATADO_X_HONORARIOS_SI_NO"));
+					datosEmpleoCargoComision.setEmpleoCargoComision(rs.getString("EMPLEO_CARGO_O_COMISION"));
+					datosEmpleoCargoComision.setFechaTomaPosesion(rs.getString("FECHA_DE_TOMA_DE_PROTESTA"));
+					datosEmpleoCargoComision.setFuncionPrincipal(rs.getString("ESPECIFIQUE_FUNCION_PRINCIPAL"));
+					datosEmpleoCargoComision.setNivelEmpleoCargoComision(rs.getString("NIVEL_DEL_EMPLEO"));
+					datosEmpleoCargoComision.setNivelOrdenGobierno(rs.getString("EMP_NIVEL_DE_GOBIERNO"));
+					datosEmpleoCargoComision.setNombreEntePublico(rs.getString("ENTE_PUBLICO"));
+					datosEmpleoCargoComision.setTelefonoOficina(telefonoOficina);
+					datosEmpleoCargoComision.setTipoOperacion("AGREGAR"); // ¿Esto es fijo? si no, de donde se obtiene?
+
+					// Domicilios Empleo
+					String rfcOrdenDomicilioEmpleo = rs.getString("RFC") + "_" + rs.getString("EMP_ORDEN");
+					Domicilio domicilioEmpleo = rfcOrdenDomicilioEmpleoMap.get(rfcOrdenDomicilioEmpleo);
+					if (domicilioEmpleo == null) {
+						domicilioEmpleo = new Domicilio();
+						rfcOrdenDomicilioMap.put(rfcOrdenDomicilio, domicilioEmpleo);
+						
+						ClaveValor municipioAlcaldia = new ClaveValor();
+						ClaveValor entidadFederativa = new ClaveValor();
+						
+						if (declaracion.getSituacionPatrimonial().getDomicilioDeclarante() == null) {
+							declaracion.getSituacionPatrimonial().setDomicilioDeclarante(domicilioDeclarante);
+						}
+						
+						municipioAlcaldia.setClave(rs.getString("EMP_ID_MUNICIPIO"));
+						municipioAlcaldia.setValor(rs.getString("EMP_MUNICIPIO"));
+						
+						entidadFederativa.setClave(rs.getString("EMP_ID_ENTIDADES"));
+						entidadFederativa.setValor(rs.getString("EMP_ENTIDADES"));
+						
+						domicilioEmpleo.setCalle(rs.getString("EMP_CALLE"));
+						domicilioEmpleo.setCiudadLocalidad(rs.getString("EMP_CIUDAD_LOCALIDAD"));
+						domicilioEmpleo.setCodigoPostal(rs.getString("EMP_CODIGO_POSTAL"));
+						domicilioEmpleo.setColoniaLocalidad(rs.getString("EMP_COLONIA_LOCALIDAD"));
+						domicilioEmpleo.setEntidadFederativa(entidadFederativa);
+						domicilioEmpleo.setEstadoProvincia(rs.getString("EMP_ESTADO_PROVINCIA"));
+						domicilioEmpleo.setMunicipioAlcaldia(municipioAlcaldia);
+						domicilioEmpleo.setNumeroExterior(rs.getString("EMP_NUMERO_EXTERIOR"));
+						domicilioEmpleo.setNumeroInterior(rs.getString("EMP_NUMERO_INTERIOR"));
+						domicilioEmpleo.setPais(rs.getString("EMP_SIGLAS_PAIS"));
+						
+						if (rs.getInt("EMP_MEXICO_O_EL_EXTRANJERO") == 1) {
+							datosEmpleoCargoComision.setDomicilioMexico(domicilio);
+						} else {
+							datosEmpleoCargoComision.setDomicilioExtranjero(domicilio);
+						}
+					}
+}
 				return list;
 			}
 		});
