@@ -1,13 +1,15 @@
 package com.api.sipain.entities;
 
+import java.util.ArrayList;
+
 public class DatosCurriculares {
-	Escolaridad escolaridad;
+	ArrayList<Escolaridad> escolaridad;
 	String aclaracionesObservaciones;
-	
-	public Escolaridad getEscolaridad() {
+
+	public ArrayList<Escolaridad> getEscolaridad() {
 		return escolaridad;
 	}
-	public void setEscolaridad(Escolaridad escolaridad) {
+	public void setEscolaridad(ArrayList<Escolaridad> escolaridad) {
 		this.escolaridad = escolaridad;
 	}
 	public String getAclaracionesObservaciones() {

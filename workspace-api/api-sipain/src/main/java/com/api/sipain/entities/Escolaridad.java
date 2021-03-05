@@ -3,7 +3,7 @@ package com.api.sipain.entities;
 public class Escolaridad {
 	String tipoOperacion;
 	ClaveValor nivel;
-	InstitucionEducativa institucioEducativa;
+	InstitucionEducativa institucionEducativa;
 	String carreraAreaConocimiento;
 	String estatus;
 	String documentoObtenido;
@@ -21,11 +21,11 @@ public class Escolaridad {
 	public void setNivel(ClaveValor nivel) {
 		this.nivel = nivel;
 	}
-	public InstitucionEducativa getInstitucioEducativa() {
-		return institucioEducativa;
+	public InstitucionEducativa getInstitucionEducativa() {
+		return institucionEducativa;
 	}
-	public void setInstitucioEducativa(InstitucionEducativa institucioEducativa) {
-		this.institucioEducativa = institucioEducativa;
+	public void setInstitucionEducativa(InstitucionEducativa institucionEducativa) {
+		this.institucionEducativa = institucionEducativa;
 	}
 	public String getCarreraAreaConocimiento() {
 		return carreraAreaConocimiento;

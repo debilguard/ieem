@@ -23,6 +23,7 @@ import com.api.sipain.entities.DatosGenerales;
 import com.api.sipain.entities.Declaracion;
 import com.api.sipain.entities.Domicilios;
 import com.api.sipain.entities.ExperienciaLaboral;
+import com.api.sipain.entities.InstitucionEducativa;
 import com.api.sipain.entities.SituacionPatrimonial;
 import com.api.sipain.entities.Domicilio;
 import com.api.sipain.entities.Rfc;
@@ -77,6 +78,8 @@ public class DeclaracionRepository {
 				Map<String, Declaracion> rfcDeclaracionMap = new HashMap<String, Declaracion>();
 				Map<String, Domicilios> rfcDomiciliosMap = new HashMap<String, Domicilios>();
 				Map<String, Domicilio> rfcOrdenDomicilioMap = new HashMap<String, Domicilio>();
+				Map<String, DatosCurriculares> rfcDatosCurricularesMap = new HashMap<String, DatosCurriculares>();
+				Map<String, Escolaridad> rfcOrdenEscolaridadMap = new HashMap<String, Escolaridad>();
 				
 				while (rs.next()) {
 					String rfcDeclaracion = rs.getString("RFC");
@@ -180,6 +183,46 @@ public class DeclaracionRepository {
 						}
 						domicilioDeclarante.setAclaracionesObservaciones(rs.getString("DOM_ACLARACIONES_OBSERVACIONES")); // Pregunta: Cada domicilio tiene sus observaciones ¿porque hay solo uno?
 					}
+					
+					// Datos Curriculares
+					DatosCurriculares datosCurricularesDeclarante = rfcDatosCurricularesMap.get(rfcDeclaracion);
+					if (datosCurricularesDeclarante == null) {
+						datosCurricularesDeclarante = new DatosCurriculares();
+						rfcDatosCurricularesMap.put(rfcDeclaracion, datosCurricularesDeclarante);
+						
+						declaracion.getSituacionPatrimonial().setDatosCurricularesDeclarante(datosCurricularesDeclarante);
+					}
+					
+					String rfcOrdenEscolaridad = rs.getString("RFC") + "_" + rs.getString("ESC_ORDEN");
+					Escolaridad escolaridad = rfcOrdenEscolaridadMap.get(rfcOrdenEscolaridad);
+					if (escolaridad == null) {
+						escolaridad = new Escolaridad();
+						rfcOrdenEscolaridadMap.put(rfcOrdenEscolaridad, escolaridad);
+						
+						if (datosCurricularesDeclarante.getEscolaridad() == null) {
+							datosCurricularesDeclarante.setEscolaridad(new ArrayList<Escolaridad>());
+						}
+						
+						ClaveValor nivel = new ClaveValor();
+						InstitucionEducativa institucionEducativa = new InstitucionEducativa();
+						
+						nivel.setClave(rs.getString("ID_GRADO_ACADEMICO"));
+						nivel.setValor(rs.getString("GRADO_ACADEMICO"));
+						
+						institucionEducativa.setNombre(rs.getString("INSTITUCION_EDUCATIVA"));
+						institucionEducativa.setUbicacion(rs.getString("LUGAR_MEXICO_O_EL_EXTRANJERO")); // Pregunta: ¿De donde debe obtenerse?
+						
+						escolaridad.setCarreraAreaConocimiento(rs.getString("CARRERA_O_AREA_DE_CONOCIMIENT"));
+						escolaridad.setDocumentoObtenido(rs.getString("DOCUMENTO_OBTENIDO"));
+						escolaridad.setEstatus(rs.getString("ESTATUS_ESTUDIOS"));
+						escolaridad.setFechaObtencion(rs.getString("FECHA_DE_OBTENCION_DEL_DOCUME"));
+						escolaridad.setInstitucionEducativa(null);
+						escolaridad.setNivel(null);
+						escolaridad.setTipoOperacion("AGREGAR"); // ¿Esto es fijo? si no, de donde se obtiene?
+						
+						datosCurricularesDeclarante.getEscolaridad().add(escolaridad);
+					}
+					datosCurricularesDeclarante.setAclaracionesObservaciones(rs.getString("ESC_ACLARACIONES_OBSERVACIONES")); // Pregunta: Cada escolaridad tiene sus observaciones ¿porque hay solo uno?
 				}
 				return list;
 			}
