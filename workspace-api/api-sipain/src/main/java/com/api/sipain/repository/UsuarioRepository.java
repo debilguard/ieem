@@ -77,9 +77,6 @@ public class UsuarioRepository {
 						transaccion.setTransaccion(rs.getString("TRANSACCION"));
 						transaccion.setusername(rs.getString("USERNAME"));
 					}
-					else {
-						System.out.println("Transaccion nula");
-					}
 				}
 				
 				return list;

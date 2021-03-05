@@ -9,7 +9,7 @@ public class DatosGenerales {
 	TelefonoPersonal telefono;
 	ClaveValor situacionPersonalEstadoCivil;
 	ClaveValor regimenMatrimonial;
-	ClaveValor otroRegimenMatrimonial;
+	String otroRegimenMatrimonial;
 	String paisNacimiento;
 	String nacionalidad;
 	String aclaracionesObservaciones;
@@ -41,6 +41,7 @@ public class DatosGenerales {
 	public CorreoElectronico getCorreoElectronico() {
 		return correoElectronico;
 	}
+	
 	public void setCorreoElectronico(CorreoElectronico correoElectronico) {
 		this.correoElectronico = correoElectronico;
 	}
@@ -62,10 +63,10 @@ public class DatosGenerales {
 	public void setRegimenMatrimonial(ClaveValor regimenMatrimonial) {
 		this.regimenMatrimonial = regimenMatrimonial;
 	}
-	public ClaveValor getOtroRegimenMatrimonial() {
+	public String getOtroRegimenMatrimonial() {
 		return otroRegimenMatrimonial;
 	}
-	public void setOtroRegimenMatrimonial(ClaveValor otroRegimenMatrimonial) {
+	public void setOtroRegimenMatrimonial(String otroRegimenMatrimonial) {
 		this.otroRegimenMatrimonial = otroRegimenMatrimonial;
 	}
 	public String getPaisNacimiento() {

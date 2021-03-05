@@ -1,7 +1,13 @@
 package com.api.sipain.entities;
 
-import java.util.Date;
-
 public class Declaracion {
-	SituacionPatrimonial situacionPatrimonial;	
+	SituacionPatrimonial situacionPatrimonial;
+
+	public SituacionPatrimonial getSituacionPatrimonial() {
+		return situacionPatrimonial;
+	}
+
+	public void setSituacionPatrimonial(SituacionPatrimonial situacionPatrimonial) {
+		this.situacionPatrimonial = situacionPatrimonial;
+	}	
 }
