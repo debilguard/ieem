@@ -1,32 +1,56 @@
 package com.api.sipain.Oauth2;
 
+import java.io.Console;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.resource.OAuth2AccessDeniedException;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+
+import com.api.sipain.entities.resError;
+
+import ch.qos.logback.core.property.ResourceExistsPropertyDefiner;
 
 @Configurable
 @EnableAuthorizationServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@Import(WebSecurityConfiguration.class)
-
 
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
-	private String clientId = "api";
-	private String clientSecret = "api#@ieem";
+	@Value("${spring.security.oauth2.resourceserver.opaquetoken.client-id}")
+	private String clientId;
+	
+	@Value("${spring.security.oauth2.resourceserver.opaquetoken.client-secret}")
+	private String clientSecret;	
+	
+	@Value("${security.oauth2.client.access-token-validity-seconds}")
+	private Integer accessTokenValiditySeconds;
+	
+	@Value("${security.oauth2.client.refresh-token-validity-seconds}")
+	private Integer refreshTokenValiditySeconds; 
 	   
 	private String privateKey = "-----BEGIN RSA PRIVATE KEY-----\r\n" + 
 	   		"MIICXAIBAAKBgQCHJhFUa78jK50Uz4eFob0hKTMbC9jzDNbbV3oM+SOaYFzkAkLU\r\n" + 
@@ -59,25 +83,24 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
     @Autowired
     private PasswordEncoder oauthClientPasswordEncoder;
-
+     
+    @Autowired
+    ResponseExceptionTranslator oauthexceptionTranslator;
+    
+    
     @Bean
 	public JwtTokenStore tokenStore() {
 	      return new JwtTokenStore(tokenEnhancer());
 	}
     
     @Bean
-	   public JwtAccessTokenConverter tokenEnhancer() {
-	      JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-	      converter.setSigningKey(privateKey);
-	      converter.setVerifierKey(publicKey);
-	      return converter;
-	   }
-
-    @Bean
-    public OAuth2AccessDeniedHandler oauthAccessDeniedHandler() {
-        return new OAuth2AccessDeniedHandler();
+    public JwtAccessTokenConverter tokenEnhancer() {
+      JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+      converter.setSigningKey(privateKey);
+      converter.setVerifierKey(publicKey);
+      return converter;
     }
-
+ 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) {
         security.tokenKeyAccess("permitAll()")
@@ -90,17 +113,18 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
     	clients.inMemory().withClient(clientId)
 	      .secret(oauthClientPasswordEncoder.encode(clientSecret))
-	      .scopes("read", "write")
-	      .authorizedGrantTypes("password", "refresh_token").accessTokenValiditySeconds(20000)
-	      .refreshTokenValiditySeconds(20000);
-
+	      .scopes("read")
+	      .authorizedGrantTypes("password", "refresh_token")
+	      .accessTokenValiditySeconds(accessTokenValiditySeconds)
+	      .refreshTokenValiditySeconds(refreshTokenValiditySeconds);
 	   }
 
     @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints)  {
         endpoints.tokenStore(tokenStore())
         .accessTokenConverter(tokenEnhancer())
         .authenticationManager(authenticationManager)
-        .userDetailsService(userDetailsService);
-    }
+        .userDetailsService(userDetailsService)  
+        .exceptionTranslator(oauthexceptionTranslator); 
+    } 
 }

@@ -1,11 +1,8 @@
 package com.api.sipain.Oauth2;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,13 +10,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import com.api.sipain.Utilities.Encoders;
+import org.springframework.security.web.AuthenticationEntryPoint; 
 
 @Configuration
-@EnableWebSecurity
-@Order(SecurityProperties.BASIC_AUTH_ORDER)
-@Import(Encoders.class)
+@EnableWebSecurity 
+
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -27,35 +22,16 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private PasswordEncoder userPasswordEncoder;
+     
 
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
+ 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(userPasswordEncoder);
-    }
-    
-    @Override
-    public void configure(HttpSecurity http) throws Exception {
-        /*
-    	http.requestMatchers()
-                .antMatchers(SECURED_PATTERN)
-                .and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.POST, SECURED_PATTERN)
-                .access(SECURED_WRITE_SCOPE)
-                .anyRequest()
-                .access(SECURED_READ_SCOPE);*/
-    	http.csrf().disable()
-    	.anonymous().disable()
-    	.authorizeRequests()
-    	.antMatchers("/oauth/","/oauth/token","/oauth/**")
-    	.permitAll()
-    	.anyRequest()
-    	.authenticated();
-    }
+    } 
 }
