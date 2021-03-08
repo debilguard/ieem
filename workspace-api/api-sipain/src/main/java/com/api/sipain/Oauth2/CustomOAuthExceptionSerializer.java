@@ -7,11 +7,11 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import java.io.IOException; 
 
   
-public class CustomOauthExceptionSerializer extends StdSerializer<CustomOAuth2Exception> {
+public class CustomOAuthExceptionSerializer extends StdSerializer<CustomOAuth2Exception> {
 
 	private static final long serialVersionUID = 1L;
 
-	public CustomOauthExceptionSerializer() {
+	public CustomOAuthExceptionSerializer() {
         super(CustomOAuth2Exception.class);
     }
 

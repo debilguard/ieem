@@ -1,38 +1,20 @@
 package com.api.sipain.Oauth2;
 
-import java.io.Console;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.resource.OAuth2AccessDeniedException;
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator;
-import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
-
-import com.api.sipain.entities.resError;
-
-import ch.qos.logback.core.property.ResourceExistsPropertyDefiner;
 
 @Configurable
 @EnableAuthorizationServer
@@ -87,6 +69,9 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Autowired
     ResponseExceptionTranslator oauthexceptionTranslator;
     
+    @Autowired
+    AutenticationEntryPoint authEntryPoint;
+    
     
     @Bean
 	public JwtTokenStore tokenStore() {
@@ -105,8 +90,11 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     public void configure(AuthorizationServerSecurityConfigurer security) {
         security.tokenKeyAccess("permitAll()")
         .checkTokenAccess("isAuthenticated()")
-        .passwordEncoder(oauthClientPasswordEncoder)
-        .allowFormAuthenticationForClients();
+        .passwordEncoder(oauthClientPasswordEncoder); 
+        CustomClientCredentialsTokenEndpointFilter endpointFilter = new CustomClientCredentialsTokenEndpointFilter(security);
+        endpointFilter.afterPropertiesSet();
+        endpointFilter.setAuthenticationEntryPoint(authEntryPoint);
+        security.addTokenEndpointAuthenticationFilter(endpointFilter);
     }
     
     @Override

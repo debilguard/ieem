@@ -18,7 +18,7 @@ public class UserDetailsRepository {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 	
-	  public UserDetailsAuthorization getUserDetails(String username) {
+	  public UserDetailsAuthorization getUserDetails(String username) throws Exception {
 	      
 		  Collection<GrantedAuthority> listOfgrantedAuthorities = new ArrayList<>();
 	      String userSQLQuery = "SELECT username,password FROM tsipain_api_usuario WHERE USERNAME=?"; 
@@ -37,8 +37,8 @@ public class UserDetailsRepository {
 	         listOfgrantedAuthorities.add(grantedAuthority);
 	         list.get(0).setListOfgrantedAuthorities(listOfgrantedAuthorities);
 	         return list.get(0);
-	      }
-	      return null;
+	      } 
+	      throw new Exception("Invalid password or username");
 	   } 
 }
 

@@ -3,20 +3,13 @@ package com.api.sipain.controller;
 import java.rmi.UnexpectedException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.WebRequest;
-
 import com.api.sipain.Utilities.RequestValidation;
 import com.api.sipain.entities.Usuario;
 import com.api.sipain.entities.apiRequest;
-import com.api.sipain.entities.resError;
 import com.api.sipain.entities.tsipainapiusuario;
 import com.api.sipain.service.UsuarioService;
 
