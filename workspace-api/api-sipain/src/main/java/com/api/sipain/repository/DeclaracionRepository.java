@@ -20,6 +20,7 @@ import org.springframework.stereotype.Repository;
 import com.api.sipain.entities.DatosCurriculares;
 import com.api.sipain.entities.DatosEmpleoCargoComision;
 import com.api.sipain.entities.DatosGenerales;
+import com.api.sipain.entities.DatosPareja;
 import com.api.sipain.entities.Declaracion;
 import com.api.sipain.entities.Domicilios;
 import com.api.sipain.entities.ExperienciaLaboral;
@@ -29,6 +30,8 @@ import com.api.sipain.entities.Domicilio;
 import com.api.sipain.entities.Rfc;
 import com.api.sipain.entities.CorreoElectronico;
 import com.api.sipain.entities.TelefonoPersonal;
+import com.api.sipain.entities.ActividadLaboralSectorPrivado;
+import com.api.sipain.entities.ActividadLaboralSectorPublico;
 import com.api.sipain.entities.ClaveValor;
 import com.api.sipain.entities.Escolaridad;
 import com.api.sipain.entities.TelefonoGeneral;
@@ -48,7 +51,7 @@ public class DeclaracionRepository {
 	EntityManagerFactory emf;
 	
 	public List<Declaracion> getDeclaracionesList() {
-		String str="SELECT * FROM V_DECLARACION_INDIVIDUAL"; // 1. Inicial; 2. Conclusión; 3. Modificación
+		String str="SELECT * FROM V_DECLARACION WHERE id_tipo_de_declaracion = 1"; // 1. Inicial; 2. Conclusión; 3. Modificación
 		return jdbcTemplate.query(str, new ResultSetExtractor<List<Declaracion>>() {
 			@Override
 			public List<Declaracion> extractData(ResultSet rs) throws SQLException, DataAccessException {
@@ -61,6 +64,10 @@ public class DeclaracionRepository {
 				Map<String, Escolaridad> rfcOrdenEscolaridadMap = new HashMap<String, Escolaridad>();
 				Map<String, DatosEmpleoCargoComision> rfcDatosEmpleoMap = new HashMap<String, DatosEmpleoCargoComision>();
 				Map<String, Domicilio> rfcOrdenDomicilioEmpleoMap = new HashMap<String, Domicilio>();
+				Map<String, ExperienciaLaboral> rfcExperienciaLaboralMap = new HashMap<String, ExperienciaLaboral>();
+				Map<String, Experiencia> rfcOrdenExperienciaMap = new HashMap<String, Experiencia>();
+				Map<String, DatosPareja> rfcDatosParejaMap = new HashMap<String, DatosPareja>();
+				Map<String, Domicilio> rfcOrdenDomicilioParejaMap = new HashMap<String, Domicilio>();
 				
 				while (rs.next()) {
 					String rfcDeclaracion = rs.getString("RFC");
@@ -76,9 +83,6 @@ public class DeclaracionRepository {
 						ClaveValor regimenMatrimonial = new ClaveValor();
 						Rfc rfc = new Rfc();
 						TelefonoPersonal telefono = new TelefonoPersonal();
-						
-						//DatosEmpleoCargoComision datosEmpleoCargoComision = new DatosEmpleoCargoComision();
-						//ExperienciaLaboral experienciaLaboral = new ExperienciaLaboral();
 						
 						// Datos Generales
 						correoElectronico.setInstitucional(rs.getString("CORREO_ELECTRONICO_INSTITUCIO"));
@@ -236,7 +240,7 @@ public class DeclaracionRepository {
 					Domicilio domicilioEmpleo = rfcOrdenDomicilioEmpleoMap.get(rfcOrdenDomicilioEmpleo);
 					if (domicilioEmpleo == null) {
 						domicilioEmpleo = new Domicilio();
-						rfcOrdenDomicilioMap.put(rfcOrdenDomicilio, domicilioEmpleo);
+						rfcOrdenDomicilioEmpleoMap.put(rfcOrdenDomicilioEmpleo, domicilioEmpleo);
 						
 						ClaveValor municipioAlcaldia = new ClaveValor();
 						ClaveValor entidadFederativa = new ClaveValor();
@@ -268,7 +272,160 @@ public class DeclaracionRepository {
 							datosEmpleoCargoComision.setDomicilioExtranjero(domicilio);
 						}
 					}
-}
+					// Experiencia Laboral
+					ExperienciaLaboral experienciaLaboral = rfcExperienciaLaboralMap.get(rfcDeclaracion);
+					if (experienciaLaboral == null) {
+						experienciaLaboral = new ExperienciaLaboral();
+						rfcExperienciaLaboralMap.put(rfcDeclaracion, experienciaLaboral);
+						
+						declaracion.getSituacionPatrimonial().setExperienciaLaboral(experienciaLaboral);
+					}
+					
+					String rfcOrdenExperiencia = rs.getString("RFC") + "_" + rs.getString("EXP_ORDEN");
+					Experiencia experiencia = rfcOrdenExperienciaMap.get(rfcOrdenExperiencia);
+					if (experiencia == null) {
+						experiencia = new Experiencia();
+						rfcOrdenExperienciaMap.put(rfcOrdenExperiencia, experiencia);
+						
+						if (experienciaLaboral.getExperiencia() == null) {
+							experienciaLaboral.setExperiencia(new ArrayList<Experiencia>());
+						}
+						
+						if (rs.getInt("EXP_ORDEN") == 0) { // TODO: Comprobar si devuelve cero o null
+							experienciaLaboral.setNinguno(true);
+						} else {
+							// De catálogos
+							ClaveValor ambitoSector = new ClaveValor();
+							ClaveValor sector = new ClaveValor();
+							
+							ambitoSector.setClave(rs.getString("EXP_ID_AMBITO"));
+							ambitoSector.setValor(rs.getString("EXP_AMBITO"));
+							
+							sector.setClave(rs.getString("EXP_ID_SECTOR"));
+							sector.setValor(rs.getString("EXP_SECTOR"));
+							
+							experiencia.setAmbitoPublico(rs.getString("EXP_AMBITO_PUBLICO"));
+							experiencia.setAmbitoSector(ambitoSector);
+							experiencia.setSector(sector);
+							experiencia.setFechaEgreso(rs.getString("EXP_FECHA_EGRESO"));
+							experiencia.setFechaIngreso(rs.getString("EXP_FECHA_INGRESO"));
+							experiencia.setFuncionPrincipal(rs.getString("EXP_FUNCION_PRINCIPAL"));
+							experiencia.setNivelOrdenGobierno(rs.getString("EXP_NIVEL_DE_GOBIERNO"));
+							experiencia.setTipoOperacion("AGREGAR");
+												
+							System.out.println("ambitoSector.Valor: " + ambitoSector.getValor());
+							if (ambitoSector.getValor() == "1") {
+								experiencia.setNombreEntePublico(rs.getString("EXP_ENTE_PUBLICO_O_EMPRESA"));
+								experiencia.setAreaAdscripcion(rs.getString("EXP_AREA_DE_ADSCRIPCION"));
+								experiencia.setEmpleoCargoComision(rs.getString("EXP_EMPLEO_CARGO_O_COMISION"));
+							} else {
+								experiencia.setNombreEmpresaSociedadAsociacion(rs.getString("EXP_ENTE_PUBLICO_O_EMPRESA"));
+								experiencia.setRfc(rs.getString("EXP_RFC_ENTE"));
+								experiencia.setArea(rs.getString("EXP_AREA_DE_ADSCRIPCION"));
+								experiencia.setPuesto(rs.getString("EXP_EMPLEO_CARGO_O_COMISION"));
+							}
+							
+							System.out.println("EXP_LUGAR_MEXICO_EXTRANJERO: " + rs.getInt("EXP_LUGAR_MEXICO_EXTRANJERO"));
+							if (rs.getInt("EXP_LUGAR_MEXICO_EXTRANJERO") == 1) {
+								experiencia.setUbicacion("MX");
+							} else {
+								experiencia.setUbicacion("EX"); // ¿Cuál debe ser el valor para extranjero?
+							}
+							
+							experienciaLaboral.getExperiencia().add(experiencia);
+							experienciaLaboral.setNinguno(false);
+						}
+					}
+					experienciaLaboral.setAclaracionesObservaciones(rs.getString("EXP_ACLARACIONES_OBSERVACIONES")); // Pregunta: Cada experiencia tiene sus observaciones ¿porque hay solo uno?
+
+					// Datos Pareja
+					DatosPareja datosPareja = rfcDatosParejaMap.get(rfcDeclaracion);
+					if (datosPareja == null) {
+						datosPareja = new DatosPareja();
+						rfcDatosParejaMap.put(rfcDeclaracion, datosPareja);
+						
+						declaracion.getSituacionPatrimonial().setDatosPareja(datosPareja);
+					}
+					
+					if (rs.getInt("PAR_ORDEN") == 0) { // TODO: Comprobar si devuelve cero o null
+						datosPareja.setNinguno(true);
+					} else {
+						// Domicilios Pareja
+						String rfcOrdenDomicilioPareja = rs.getString("RFC") + "_" + rs.getString("PAR_ORDEN");
+						Domicilio domicilioPareja = rfcOrdenDomicilioParejaMap.get(rfcOrdenDomicilioPareja);
+						if (domicilioPareja == null) {
+							domicilioPareja = new Domicilio();
+							rfcOrdenDomicilioParejaMap.put(rfcOrdenDomicilioPareja, domicilioPareja);
+							
+							ClaveValor municipioAlcaldia = new ClaveValor();
+							ClaveValor entidadFederativa = new ClaveValor();
+							
+							municipioAlcaldia.setClave(rs.getString("PAR_ID_MUNICIPIO"));
+							municipioAlcaldia.setValor(rs.getString("PAR_MUNICIPIO"));
+							
+							entidadFederativa.setClave(rs.getString("PAR_ID_ENTIDADES"));
+							entidadFederativa.setValor(rs.getString("PAR_ENTIDADES"));
+							
+							domicilioPareja.setCalle(rs.getString("PAR_CALLE"));
+							domicilioPareja.setCiudadLocalidad(rs.getString("PAR_CIUDAD_LOCALIDAD"));
+							domicilioPareja.setCodigoPostal(rs.getString("PAR_CODIGO_POSTAL"));
+							domicilioPareja.setColoniaLocalidad(rs.getString("PAR_COLONIA_LOCALIDAD"));
+							domicilioPareja.setEntidadFederativa(entidadFederativa);
+							domicilioPareja.setEstadoProvincia(rs.getString("PAR_ESTADO_PROVINCIA"));
+							domicilioPareja.setMunicipioAlcaldia(municipioAlcaldia);
+							domicilioPareja.setNumeroExterior(rs.getString("PAR_NUMERO_EXTERIOR"));
+							domicilioPareja.setNumeroInterior(rs.getString("PAR_NUMERO_INTERIOR"));
+							domicilioPareja.setPais(rs.getString("PAR_PAIS"));
+							
+							if (rs.getInt("PAR_MEXICO_EXTRANJERO") == 1) {
+								datosPareja.setDomicilioMexico(domicilio);
+							} else {
+								datosPareja.setDomicilioExtranjero(domicilio);
+							}
+						}
+
+						ClaveValor actividadLaboral = new ClaveValor();
+						ActividadLaboralSectorPublico actividadLaboralSectorPublico = new ActividadLaboralSectorPublico();
+						ActividadLaboralSectorPrivado actividadLaboralSectorPrivadoOtro = new ActividadLaboralSectorPrivado();
+
+						actividadLaboral.setClave(rs.getString("PAR_ID_AMBITO"));
+						actividadLaboral.setValor(rs.getString("PAR_AMBITO"));
+						
+						actividadLaboralSectorPublico.setNivelOrdenGobierno(rs.getString("PAR_NIVEL_GOBIERNO"));
+						actividadLaboralSectorPublico.setAmbitoPublico(rs.getString("PAR_AMBITO_AMBITO"));
+						actividadLaboralSectorPublico.setAreaAdscripcion(rs.getString("PAR_AREA_DE_ADSCRIPCION"));
+						actividadLaboralSectorPublico.setEmpleoCargoComision(rs.getString("PAR_EMPLEO_CARGO_O_COMISION"));
+						actividadLaboralSectorPublico.setFechaIngreso(rs.getDate("PAR_FECHA_INGRESO"));
+						actividadLaboralSectorPublico.setFuncionPrincipal(rs.getString("PAR_FUNCION_PRINCIPAL"));
+						actividadLaboralSectorPublico.setNombreEntePublico(rs.getString("PAR_ENTE_PUBLICO_O_EMPRESA"));
+						actividadLaboralSectorPublico.setSalarioMensualNeto(null);
+						
+						actividadLaboralSectorPrivadoOtro.setEmpleoCargoComision(rs.getString("PAR_EMPLEO_CARGO_O_COMISION"));
+						actividadLaboralSectorPrivadoOtro.setFechaIngreso(rs.getDate("PAR_FECHA_INGRESO"));
+						actividadLaboralSectorPrivadoOtro.setNombreEmpresaSociedadAsociacion(rs.getString("PAR_ENTE_PUBLICO_O_EMPRESA"));
+						actividadLaboralSectorPrivadoOtro.setProveedorContratistaGobierno(rs.getBoolean("PAR_PROVEEDOR_O_CONTRATISTA"));
+						actividadLaboralSectorPrivadoOtro.setRfc(rs.getString("PAR_RFC_ENTE"));
+						actividadLaboralSectorPrivadoOtro.setSalarioMensualNeto(null);
+						actividadLaboralSectorPrivadoOtro.setSector(null);
+						
+						datosPareja.setTipoOperacion("AGREGAR");
+						datosPareja.setNombre(rs.getString("PAR_NOMBRE"));
+						datosPareja.setPrimerApellido(rs.getString("PAR_PRIMER_APELLIDO"));
+						datosPareja.setSegundoApellido(rs.getString("PAR_SEGUNDO_APELLIDO"));
+						datosPareja.setFechaNacimiento(rs.getDate("PAR_FECHA_DE_NACIMIENTO"));
+						datosPareja.setRfc(rs.getString("PAR_RFC"));
+						datosPareja.setRelacionConDeclarante(rs.getString("PAR_RELACION_PERSONA_1"));
+						datosPareja.setCiudadanoExtranjero(rs.getBoolean("PAR_CIUDADANO_EXTRANJERO"));
+						datosPareja.setCurp(rs.getString("PAR_CURP"));
+						datosPareja.setEsDependienteEconomico(rs.getBoolean("DEPENDIENTE_ECONOMICO"));
+						datosPareja.setHabitaDomicilioDeclarante(rs.getBoolean("HABITA_EN_EL_DOMICILIO"));
+						datosPareja.setLugarDondeReside(rs.getString("PAR_LUGAR_MEX_EXT"));
+						datosPareja.setActividadLaboral(actividadLaboral);
+						datosPareja.setActividadLaboralSectorPublico(null);
+						datosPareja.setActividadLaboralSectorPrivadoOtro(null);
+						datosPareja.setAclaracionObservaciones(rs.getString("PAR_ACLARACIONES_OBSERVACIONES"));
+					}
+				}				
 				return list;
 			}
 		});

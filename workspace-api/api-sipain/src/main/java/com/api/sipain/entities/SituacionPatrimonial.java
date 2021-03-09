@@ -6,7 +6,14 @@ public class SituacionPatrimonial {
 	DatosCurriculares datosCurricularesDeclarante;
 	DatosEmpleoCargoComision datosEmpleoCargoComision;
 	ExperienciaLaboral experienciaLaboral;
-
+	DatosPareja datosPareja;
+	
+	public DatosPareja getDatosPareja() {
+		return datosPareja;
+	}
+	public void setDatosPareja(DatosPareja datosPareja) {
+		this.datosPareja = datosPareja;
+	}
 	public DatosGenerales getDatosGenerales() {
 		return datosGenerales;
 	}

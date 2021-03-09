@@ -3,16 +3,45 @@ package com.api.sipain.entities;
 public class Experiencia {
 	String tipoOperacion;
 	ClaveValor ambitoSector;
+	ClaveValor sector;
 	String nivelOrdenGobierno;
 	String ambitoPublico;
 	String nombreEntePublico;
+	String nombreEmpresaSociedadAsociacion;
 	String areaAdscripcion;
 	String empleoCargoComision;
 	String funcionPrincipal;
 	String fechaIngreso;
 	String fechaEgreso;
 	String ubicacion;
+	String rfc;
+	String area;
+	String puesto;
 	
+	public String getArea() {
+		return area;
+	}
+	public void setArea(String area) {
+		this.area = area;
+	}
+	public String getPuesto() {
+		return puesto;
+	}
+	public void setPuesto(String puesto) {
+		this.puesto = puesto;
+	}
+	public String getRfc() {
+		return rfc;
+	}
+	public void setRfc(String rfc) {
+		this.rfc = rfc;
+	}
+	public String getNombreEmpresaSociedadAsociacion() {
+		return nombreEmpresaSociedadAsociacion;
+	}
+	public void setNombreEmpresaSociedadAsociacion(String nombreEmpresaSociedadAsociacion) {
+		this.nombreEmpresaSociedadAsociacion = nombreEmpresaSociedadAsociacion;
+	}
 	public String getTipoOperacion() {
 		return tipoOperacion;
 	}
@@ -24,6 +53,12 @@ public class Experiencia {
 	}
 	public void setAmbitoSector(ClaveValor ambitoSector) {
 		this.ambitoSector = ambitoSector;
+	}
+	public ClaveValor getSector() {
+		return sector;
+	}
+	public void setSector(ClaveValor sector) {
+		this.sector = sector;
 	}
 	public String getNivelOrdenGobierno() {
 		return nivelOrdenGobierno;
