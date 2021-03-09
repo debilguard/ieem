@@ -338,6 +338,7 @@ public class DeclaracionRepository {
 					}
 					experienciaLaboral.setAclaracionesObservaciones(rs.getString("EXP_ACLARACIONES_OBSERVACIONES")); // Pregunta: Cada experiencia tiene sus observaciones ¿porque hay solo uno?
 
+					/*
 					// Datos Pareja
 					DatosPareja datosPareja = rfcDatosParejaMap.get(rfcDeclaracion);
 					if (datosPareja == null) {
@@ -425,6 +426,7 @@ public class DeclaracionRepository {
 						datosPareja.setActividadLaboralSectorPrivadoOtro(null);
 						datosPareja.setAclaracionObservaciones(rs.getString("PAR_ACLARACIONES_OBSERVACIONES"));
 					}
+					*/
 				}				
 				return list;
 			}
