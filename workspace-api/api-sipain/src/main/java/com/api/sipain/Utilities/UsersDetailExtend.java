@@ -1,4 +1,4 @@
-package com.api.sipain.Utilities;
+/*package com.api.sipain.Utilerias;
 
 import com.api.sipain.entities.UserDetailsAuthorization;
 import org.springframework.security.core.userdetails.User;
@@ -14,3 +14,4 @@ public class UsersDetailExtend extends User {
 	    		);
 	   }
 }
+*/

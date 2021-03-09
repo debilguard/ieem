@@ -8,15 +8,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.api.sipain.Utilities.RequestValidation;
+
+import com.api.sipain.entities.Declaracion;
 import com.api.sipain.entities.Usuario;
 import com.api.sipain.entities.apiRequest;
 import com.api.sipain.entities.tsipainapiusuario;
+import com.api.sipain.service.DeclaracionesService;
+import com.api.sipain.service.SampleService;
 import com.api.sipain.service.UsuarioService;
 
 
 
 @RestController 
-public class DeclaracionesController {
+public class apiController {
+	@Autowired
+	DeclaracionesService declaracionesService;
 	
 	@Autowired
 	UsuarioService usuarioService; 
@@ -38,8 +44,17 @@ public class DeclaracionesController {
 	@PostMapping(path =  "/api/user", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE} )
 	public List<Usuario> getUser(apiRequest req) throws UnexpectedException
 	{	
-		 validator.IsValid(req);
-		 return usuarioService.getUser();	
-	} 
+		 return sampleService.getAll(); 
+	}
+	
+	@GetMapping("/api/userlist")
+	public List<tsipainapiusuario> getUserList() {
+		return usuarioService.getUsersList();
+	}
+	
+	@GetMapping("/api/declaracionlist")
+	public List<Declaracion> getDeclaracionesList() {
+		return declaracionesService.getDeclaraciones();
+	}
 }
 

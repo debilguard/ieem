@@ -2,12 +2,13 @@ package com.api.sipain;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer; 
-  
+//import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
+//import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer; 
+ 
+//@SuppressWarnings("deprecation")
 @SpringBootApplication
-@EnableAuthorizationServer
-@EnableResourceServer
+//@EnableAuthorizationServer
+//@EnableResourceServer
 
 public class App {
 

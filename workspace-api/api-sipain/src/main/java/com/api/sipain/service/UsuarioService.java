@@ -23,6 +23,11 @@ public class UsuarioService {
 
 
 	public List<Usuario> getUser() {
+		//return usuarioRepository.getUser();
 		return usuarioRepository.getUser();
 	} 
+	
+	public List<tsipainapiusuario> getUsersList() {
+		return usuarioRepository.getUsersList();
+	}
 }
