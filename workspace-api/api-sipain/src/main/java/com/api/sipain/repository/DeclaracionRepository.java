@@ -28,6 +28,7 @@ import com.api.sipain.entities.InstitucionEducativa;
 import com.api.sipain.entities.SituacionPatrimonial;
 import com.api.sipain.entities.Domicilio;
 import com.api.sipain.entities.Rfc;
+import com.api.sipain.entities.Salario;
 import com.api.sipain.entities.CorreoElectronico;
 import com.api.sipain.entities.TelefonoPersonal;
 import com.api.sipain.entities.ActividadLaboralSectorPrivado;
@@ -338,7 +339,6 @@ public class DeclaracionRepository {
 					}
 					experienciaLaboral.setAclaracionesObservaciones(rs.getString("EXP_ACLARACIONES_OBSERVACIONES")); // Pregunta: Cada experiencia tiene sus observaciones ¿porque hay solo uno?
 
-					/*
 					// Datos Pareja
 					DatosPareja datosPareja = rfcDatosParejaMap.get(rfcDeclaracion);
 					if (datosPareja == null) {
@@ -378,7 +378,8 @@ public class DeclaracionRepository {
 							domicilioPareja.setNumeroInterior(rs.getString("PAR_NUMERO_INTERIOR"));
 							domicilioPareja.setPais(rs.getString("PAR_PAIS"));
 							
-							if (rs.getInt("PAR_MEXICO_EXTRANJERO") == 1) {
+							System.out.println("PAR_MEXICO_EXTRANJERO: *" + rs.getString("PAR_MEXICO_EXTRANJERO") + "*");
+							if (rs.getString("PAR_MEXICO_EXTRANJERO") == null || rs.getInt("PAR_MEXICO_EXTRANJERO") == 1) {
 								datosPareja.setDomicilioMexico(domicilio);
 							} else {
 								datosPareja.setDomicilioExtranjero(domicilio);
@@ -386,30 +387,38 @@ public class DeclaracionRepository {
 						}
 
 						ClaveValor actividadLaboral = new ClaveValor();
+						ClaveValor sector = new ClaveValor();
 						ActividadLaboralSectorPublico actividadLaboralSectorPublico = new ActividadLaboralSectorPublico();
 						ActividadLaboralSectorPrivado actividadLaboralSectorPrivadoOtro = new ActividadLaboralSectorPrivado();
-
+						Salario salario = new Salario();
+						
 						actividadLaboral.setClave(rs.getString("PAR_ID_AMBITO"));
 						actividadLaboral.setValor(rs.getString("PAR_AMBITO"));
 						
-						actividadLaboralSectorPublico.setNivelOrdenGobierno(rs.getString("PAR_NIVEL_GOBIERNO"));
-						actividadLaboralSectorPublico.setAmbitoPublico(rs.getString("PAR_AMBITO_AMBITO"));
+						salario.setValor(rs.getInt("PAR_SALARIO"));
+						salario.setMoneda("MXN"); // Pregunta: ¿Este valor es fijo?
+						
+						sector.setClave(rs.getString("PAR_ID_SECTOR"));
+						sector.setValor(rs.getString("PAR_SECTOR"));
+						
+						actividadLaboralSectorPublico.setNivelOrdenGobierno(rs.getString("PAR_NIVEL_DE_GOBIERNO"));
+						actividadLaboralSectorPublico.setAmbitoPublico(rs.getString("PAR_AMBITO_PUBLICO"));
 						actividadLaboralSectorPublico.setAreaAdscripcion(rs.getString("PAR_AREA_DE_ADSCRIPCION"));
 						actividadLaboralSectorPublico.setEmpleoCargoComision(rs.getString("PAR_EMPLEO_CARGO_O_COMISION"));
 						actividadLaboralSectorPublico.setFechaIngreso(rs.getDate("PAR_FECHA_INGRESO"));
 						actividadLaboralSectorPublico.setFuncionPrincipal(rs.getString("PAR_FUNCION_PRINCIPAL"));
 						actividadLaboralSectorPublico.setNombreEntePublico(rs.getString("PAR_ENTE_PUBLICO_O_EMPRESA"));
-						actividadLaboralSectorPublico.setSalarioMensualNeto(null);
+						actividadLaboralSectorPublico.setSalarioMensualNeto(salario);
 						
 						actividadLaboralSectorPrivadoOtro.setEmpleoCargoComision(rs.getString("PAR_EMPLEO_CARGO_O_COMISION"));
 						actividadLaboralSectorPrivadoOtro.setFechaIngreso(rs.getDate("PAR_FECHA_INGRESO"));
 						actividadLaboralSectorPrivadoOtro.setNombreEmpresaSociedadAsociacion(rs.getString("PAR_ENTE_PUBLICO_O_EMPRESA"));
 						actividadLaboralSectorPrivadoOtro.setProveedorContratistaGobierno(rs.getBoolean("PAR_PROVEEDOR_O_CONTRATISTA"));
 						actividadLaboralSectorPrivadoOtro.setRfc(rs.getString("PAR_RFC_ENTE"));
-						actividadLaboralSectorPrivadoOtro.setSalarioMensualNeto(null);
-						actividadLaboralSectorPrivadoOtro.setSector(null);
+						actividadLaboralSectorPrivadoOtro.setSalarioMensualNeto(salario);
+						actividadLaboralSectorPrivadoOtro.setSector(sector);
 						
-						datosPareja.setTipoOperacion("AGREGAR");
+						datosPareja.setTipoOperacion(rs.getString("PAR_TIPO_DE_OPERACION"));
 						datosPareja.setNombre(rs.getString("PAR_NOMBRE"));
 						datosPareja.setPrimerApellido(rs.getString("PAR_PRIMER_APELLIDO"));
 						datosPareja.setSegundoApellido(rs.getString("PAR_SEGUNDO_APELLIDO"));
@@ -422,11 +431,10 @@ public class DeclaracionRepository {
 						datosPareja.setHabitaDomicilioDeclarante(rs.getBoolean("HABITA_EN_EL_DOMICILIO"));
 						datosPareja.setLugarDondeReside(rs.getString("PAR_LUGAR_MEX_EXT"));
 						datosPareja.setActividadLaboral(actividadLaboral);
-						datosPareja.setActividadLaboralSectorPublico(null);
-						datosPareja.setActividadLaboralSectorPrivadoOtro(null);
+						datosPareja.setActividadLaboralSectorPublico(actividadLaboralSectorPublico);
+						datosPareja.setActividadLaboralSectorPrivadoOtro(actividadLaboralSectorPrivadoOtro);
 						datosPareja.setAclaracionObservaciones(rs.getString("PAR_ACLARACIONES_OBSERVACIONES"));
 					}
-					*/
 				}				
 				return list;
 			}

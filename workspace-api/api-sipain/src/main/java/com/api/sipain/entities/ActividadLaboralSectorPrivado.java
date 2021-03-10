@@ -8,7 +8,7 @@ public class ActividadLaboralSectorPrivado {
     String rfc;
     Date fechaIngreso;
     ClaveValor sector;
-    ClaveValor salarioMensualNeto;
+    Salario salarioMensualNeto;
     Boolean proveedorContratistaGobierno;
     
 	public String getNombreEmpresaSociedadAsociacion() {
@@ -41,10 +41,10 @@ public class ActividadLaboralSectorPrivado {
 	public void setSector(ClaveValor sector) {
 		this.sector = sector;
 	}
-	public ClaveValor getSalarioMensualNeto() {
+	public Salario getSalarioMensualNeto() {
 		return salarioMensualNeto;
 	}
-	public void setSalarioMensualNeto(ClaveValor salarioMensualNeto) {
+	public void setSalarioMensualNeto(Salario salarioMensualNeto) {
 		this.salarioMensualNeto = salarioMensualNeto;
 	}
 	public Boolean getProveedorContratistaGobierno() {
