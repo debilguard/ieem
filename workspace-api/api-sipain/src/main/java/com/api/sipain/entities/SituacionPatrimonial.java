@@ -7,7 +7,14 @@ public class SituacionPatrimonial {
 	DatosEmpleoCargoComision datosEmpleoCargoComision;
 	ExperienciaLaboral experienciaLaboral;
 	DatosPareja datosPareja;
+	DatosDependienteEconomico datosDependienteEconomico;
 	
+	public DatosDependienteEconomico getDatosDependienteEconomico() {
+		return datosDependienteEconomico;
+	}
+	public void setDatosDependienteEconomico(DatosDependienteEconomico datosDependienteEconomico) {
+		this.datosDependienteEconomico = datosDependienteEconomico;
+	}
 	public DatosPareja getDatosPareja() {
 		return datosPareja;
 	}

@@ -18,10 +18,12 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
 import com.api.sipain.entities.DatosCurriculares;
+import com.api.sipain.entities.DatosDependienteEconomico;
 import com.api.sipain.entities.DatosEmpleoCargoComision;
 import com.api.sipain.entities.DatosGenerales;
 import com.api.sipain.entities.DatosPareja;
 import com.api.sipain.entities.Declaracion;
+import com.api.sipain.entities.DependienteEconomico;
 import com.api.sipain.entities.Domicilios;
 import com.api.sipain.entities.ExperienciaLaboral;
 import com.api.sipain.entities.InstitucionEducativa;
@@ -69,6 +71,9 @@ public class DeclaracionRepository {
 				Map<String, Experiencia> rfcOrdenExperienciaMap = new HashMap<String, Experiencia>();
 				Map<String, DatosPareja> rfcDatosParejaMap = new HashMap<String, DatosPareja>();
 				Map<String, Domicilio> rfcOrdenDomicilioParejaMap = new HashMap<String, Domicilio>();
+				Map<String, DatosDependienteEconomico> rfcDatosDependienteEconomicoMap = new HashMap<String, DatosDependienteEconomico>();
+				Map<String, DependienteEconomico> rfcDependienteEconomicoMap = new HashMap<String, DependienteEconomico>();
+				Map<String, Domicilio> rfcOrdenDomicilioDependienteMap = new HashMap<String, Domicilio>();
 				
 				while (rs.next()) {
 					String rfcDeclaracion = rs.getString("RFC");
@@ -434,6 +439,118 @@ public class DeclaracionRepository {
 						datosPareja.setActividadLaboralSectorPublico(actividadLaboralSectorPublico);
 						datosPareja.setActividadLaboralSectorPrivadoOtro(actividadLaboralSectorPrivadoOtro);
 						datosPareja.setAclaracionObservaciones(rs.getString("PAR_ACLARACIONES_OBSERVACIONES"));
+					}
+
+					// Dependientes económicos
+					DatosDependienteEconomico datosDependienteEconomico = rfcDatosDependienteEconomicoMap.get(rfcDeclaracion);
+					if (datosDependienteEconomico == null) {
+						datosDependienteEconomico = new DatosDependienteEconomico();
+						rfcDatosDependienteEconomicoMap.put(rfcDeclaracion, datosDependienteEconomico);
+						
+						declaracion.getSituacionPatrimonial().setDatosDependienteEconomico(datosDependienteEconomico);
+					}
+					
+					String rfcOrdenDependiente = rs.getString("RFC") + "_" + rs.getString("DEP_NOMBRE") + "_" + rs.getString("DEP_PRIMER_APELLIDO");
+					DependienteEconomico dependiente = rfcDependienteEconomicoMap.get(rfcOrdenDependiente);
+					if (dependiente == null) {
+						dependiente = new DependienteEconomico();
+						rfcDependienteEconomicoMap.put(rfcOrdenDependiente, dependiente);
+						
+						if (datosDependienteEconomico.getDependienteEconomico() == null) {
+							datosDependienteEconomico.setDependienteEconomico(new ArrayList<DependienteEconomico>());
+						}
+						
+						if (rs.getInt("DEP_ORDEN") == 0) { // TODO: Comprobar si devuelve cero o null
+							datosDependienteEconomico.setNinguno(true);
+						} else {
+							// Domicilios Dependiente
+							String rfcOrdenDomicilioDependiente = rs.getString("RFC") + "_" + rs.getString("DEP_ORDEN");
+							Domicilio domicilioDependiente = rfcOrdenDomicilioDependienteMap.get(rfcOrdenDomicilioDependiente);
+							if (domicilioDependiente == null) {
+								domicilioDependiente = new Domicilio();
+								rfcOrdenDomicilioParejaMap.put(rfcOrdenDomicilioDependiente, domicilioDependiente);
+								
+								ClaveValor municipioAlcaldia = new ClaveValor();
+								ClaveValor entidadFederativa = new ClaveValor();
+								
+								municipioAlcaldia.setClave(rs.getString("DEP_ID_MUNICIPIO"));
+								municipioAlcaldia.setValor(rs.getString("DEP_MUNICIPIO"));
+								
+								entidadFederativa.setClave(rs.getString("DEP_ID_ENTIDADES"));
+								entidadFederativa.setValor(rs.getString("DEP_ENTIDADES"));
+								
+								domicilioDependiente.setCalle(rs.getString("DEP_CALLE"));
+								domicilioDependiente.setCiudadLocalidad(rs.getString("DEP_CIUDAD_LOCALIDAD"));
+								domicilioDependiente.setCodigoPostal(rs.getString("DEP_CODIGO_POSTAL"));
+								domicilioDependiente.setColoniaLocalidad(rs.getString("DEP_COLONIA_LOCALIDAD"));
+								domicilioDependiente.setEntidadFederativa(entidadFederativa);
+								domicilioDependiente.setEstadoProvincia(rs.getString("DEP_ESTADO_PROVINCIA"));
+								domicilioDependiente.setMunicipioAlcaldia(municipioAlcaldia);
+								domicilioDependiente.setNumeroExterior(rs.getString("DEP_NUMERO_EXTERIOR"));
+								domicilioDependiente.setNumeroInterior(rs.getString("DEP_NUMERO_INTERIOR"));
+								domicilioDependiente.setPais(rs.getString("DEP_PAIS"));
+								
+								if (rs.getString("DEP_MEXICO_EXTRANJERO") == null || rs.getInt("DEP_MEXICO_EXTRANJERO") == 1) {
+									dependiente.setDomicilioMexico(domicilioDependiente);
+								} else {
+									dependiente.setDomicilioExtranjero(domicilioDependiente);
+								}
+							}
+
+							ClaveValor actividadLaboral = new ClaveValor();
+							ClaveValor sector = new ClaveValor();
+							ActividadLaboralSectorPublico actividadLaboralSectorPublico = new ActividadLaboralSectorPublico();
+							ActividadLaboralSectorPrivado actividadLaboralSectorPrivadoOtro = new ActividadLaboralSectorPrivado();
+							Salario salario = new Salario();
+							
+							actividadLaboral.setClave(rs.getString("DEP_ID_AMBITO"));
+							actividadLaboral.setValor(rs.getString("DEP_AMBITO"));
+							
+							salario.setValor(rs.getInt("DEP_SALARIO"));
+							salario.setMoneda("MXN"); // Pregunta: ¿Este valor es fijo?
+							
+							sector.setClave(rs.getString("DEP_ID_SECTOR"));
+							sector.setValor(rs.getString("DEP_SECTOR"));
+							
+							actividadLaboralSectorPublico.setNivelOrdenGobierno(rs.getString("DEP_NIVEL_DE_GOBIERNO"));
+							actividadLaboralSectorPublico.setAmbitoPublico(rs.getString("DEP_AMBITO_PUBLICO"));
+							actividadLaboralSectorPublico.setAreaAdscripcion(rs.getString("DEP_AREA_DE_ADSCRIPCION"));
+							actividadLaboralSectorPublico.setEmpleoCargoComision(rs.getString("DEP_EMPLEO_CARGO_O_COMISION"));
+							actividadLaboralSectorPublico.setFechaIngreso(rs.getDate("DEP_FECHA_INGRESO"));
+							actividadLaboralSectorPublico.setFuncionPrincipal(rs.getString("DEP_FUNCION_PRINCIPAL"));
+							actividadLaboralSectorPublico.setNombreEntePublico(rs.getString("DEP_ENTE_PUBLICO_O_EMPRESA"));
+							actividadLaboralSectorPublico.setSalarioMensualNeto(salario);
+							
+							actividadLaboralSectorPrivadoOtro.setEmpleoCargoComision(rs.getString("DEP_EMPLEO_CARGO_O_COMISION"));
+							actividadLaboralSectorPrivadoOtro.setFechaIngreso(rs.getDate("DEP_FECHA_INGRESO"));
+							actividadLaboralSectorPrivadoOtro.setNombreEmpresaSociedadAsociacion(rs.getString("DEP_ENTE_PUBLICO_O_EMPRESA"));
+							actividadLaboralSectorPrivadoOtro.setProveedorContratistaGobierno(rs.getBoolean("DEP_PROVEEDOR_O_CONTRATISTA"));
+							actividadLaboralSectorPrivadoOtro.setRfc(rs.getString("DEP_RFC_ENTE"));
+							actividadLaboralSectorPrivadoOtro.setSalarioMensualNeto(salario);
+							actividadLaboralSectorPrivadoOtro.setSector(sector);
+							
+							dependiente.setTipoOperacion(rs.getString("DEP_TIPO_DE_OPERACION"));
+							dependiente.setNombre(rs.getString("DEP_NOMBRE"));
+							dependiente.setPrimerApellido(rs.getString("DEP_PRIMER_APELLIDO"));
+							dependiente.setSegundoApellido(rs.getString("DEP_SEGUNDO_APELLIDO"));
+							dependiente.setFechaNacimiento(rs.getDate("DEP_FECHA_DE_NACIMIENTO"));
+							dependiente.setRfc(rs.getString("DEP_RFC"));
+							dependiente.setCurp(rs.getString("DEP_CURP"));
+							dependiente.setHabitaDomicilioDeclarante(rs.getBoolean("DEP_HABITA_EN_EL_DOMICILIO"));
+							dependiente.setLugarDondeReside(rs.getString("DEP_LUGAR_MEX_EXT"));
+							dependiente.setActividadLaboral(actividadLaboral);
+							dependiente.setActividadLaboralSectorPublico(actividadLaboralSectorPublico);
+							dependiente.setActividadLaboralSectorPrivadoOtro(actividadLaboralSectorPrivadoOtro);
+							
+							datosDependienteEconomico.getDependienteEconomico().add(dependiente);
+							datosDependienteEconomico.setAclaracionesObservaciones(rs.getString("DEP_ACLARACIONES_OBSERVACIONES"));
+						}
+					}
+					if (datosDependienteEconomico.getDependienteEconomico() == null || 
+							datosDependienteEconomico.getDependienteEconomico().isEmpty()) {
+						datosDependienteEconomico.setNinguno(true);
+					} else {
+						datosDependienteEconomico.setNinguno(false);
 					}
 				}				
 				return list;
