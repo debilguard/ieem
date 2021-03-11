@@ -8,7 +8,14 @@ public class SituacionPatrimonial {
 	ExperienciaLaboral experienciaLaboral;
 	DatosPareja datosPareja;
 	DatosDependienteEconomico datosDependienteEconomico;
+	Ingresos ingresos;
 	
+	public Ingresos getIngresos() {
+		return ingresos;
+	}
+	public void setIngresos(Ingresos ingresos) {
+		this.ingresos = ingresos;
+	}
 	public DatosDependienteEconomico getDatosDependienteEconomico() {
 		return datosDependienteEconomico;
 	}
