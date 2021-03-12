@@ -140,6 +140,26 @@ FROM
     LEFT JOIN tsipain_pais pais ON pais.id_pais = dep.id_pais
     LEFT JOIN tsipain_relacion_persona per ON per.id_relacion_persona = dep.id_relacion_persona;
 /
+CREATE OR REPLACE VIEW "DESARROLLO2"."V_INGRESOS" AS 
+  SELECT
+    ing.rfc, ing.id_tipo_de_declaracion, ing.fecha_del_movimiento, ing.orden AS ing_orden
+    , ing.remuneracion_neta AS ing_remuneracion_neta, ing.remuneracion_industrial AS ing_remuneracion_industrial
+    , ing.remuneracion_servicios_profesi AS ing_rem_servicios_profesi
+    , ing.remuneracion_enagenacion_de_bi AS ing_rem_enagenacion_de_bi
+    , ing.remuneracion_financiera AS ing_remuneracion_financiera, ing.remuneracion_otros AS ing_remuneracion_otros
+    , ing.otro_especifico_inversion, ing.otros_tipo_de_ingreso AS ing_otros_tipo_de_ingreso
+    , ing.otros_ingresos_declarante AS ing_otros_ingresos_declarante
+    , ing.tipo_de_servicio AS ing_tipo_de_servicio, ing.tipo_de_negocio AS ing_tipo_de_negocio
+    , ing.nombre_o_razon_social AS ing_nombre_o_razon_social, ing.ingresos_neto_declarante AS ing_ingresos_neto_declarante
+    , ing.ingresos_neto_pareja AS ing_ingresos_neto_pareja, ing.total_ingresos AS ing_total_ingresos
+    , ing.aclaraciones_observaciones AS ing_aclaraciones_observaciones
+    , inv.id_especifico_inversion AS ing_id_especifico_inversion, inv.especifico_inversion AS ing_especifico_inversion
+    , ena.id_enajenacion_de_bien, ena.enajenacion_de_bien
+  FROM
+    tsipain_ingresos ing
+    LEFT JOIN tsipain_especifico_inversion inv ON inv.id_especifico_inversion = ing.id_especifico_inversion
+    LEFT JOIN tsipain_enajenacion_de_bien ena ON ena.id_enajenacion_de_bien = ing.id_enajenacion_de_bien;
+/
 CREATE OR REPLACE FORCE VIEW "DESARROLLO2"."V_DECLARACION" AS 
   SELECT
         dec.id_tipo_de_declaracion, dec.rfc, dec.homoclave, dec.nombre, dec.primer_apellido, dec.segundo_apellido, dec.correo_electronico_institucio
@@ -178,11 +198,17 @@ CREATE OR REPLACE FORCE VIEW "DESARROLLO2"."V_DECLARACION" AS
         , dep.dep_aclaraciones_observaciones, dep.dep_tipo_de_operacion, dep.dep_ambito_publico, dep.dep_id_ambito, dep.dep_ambito
         , dep.dep_id_sector, dep.dep_sector, dep.dep_nivel_de_gobierno, dep.dep_id_entidades, dep.dep_entidades, dep.dep_id_municipio
         , dep.dep_municipio, dep.dep_id_pais, dep.dep_pais, dep.dep_id_relacion_persona, dep.dep_relacion_persona, dep.dep_curp
+        , ing.ing_orden, ing.ing_remuneracion_neta, ing.ing_remuneracion_industrial, ing.ing_rem_servicios_profesi
+        , ing.ing_rem_enagenacion_de_bi, ing.ing_remuneracion_financiera, ing.ing_remuneracion_otros, ing.ing_otros_tipo_de_ingreso
+        , ing.ing_otros_ingresos_declarante, ing.ing_tipo_de_servicio, ing.ing_tipo_de_negocio, ing.ing_nombre_o_razon_social
+        , ing.ing_ingresos_neto_declarante, ing.ing_ingresos_neto_pareja, ing.ing_total_ingresos, ing.ing_aclaraciones_observaciones
+        , ing.ing_id_especifico_inversion, ing.ing_especifico_inversion
     FROM v_datos_generales dec
         LEFT JOIN v_domicilio dom ON dom.rfc = dec.rfc AND dec.id_tipo_de_declaracion = dom.id_tipo_de_declaracion
         LEFT JOIN v_escolaridad esc ON esc.rfc = dec.rfc AND esc.id_tipo_de_declaracion = dec.id_tipo_de_declaracion
         LEFT JOIN v_empleo emp ON emp.rfc = dec.rfc AND emp.id_tipo_de_declaracion = dec.id_tipo_de_declaracion
         LEFT JOIN v_experiencia exp ON exp.rfc = dec.rfc AND exp.id_tipo_de_declaracion = dec.id_tipo_de_declaracion
         LEFT JOIN v_pareja par ON par.rfc = dec.rfc AND par.id_tipo_de_declaracion = dec.id_tipo_de_declaracion
-        LEFT JOIN v_dependientes dep ON dep.rfc = dec.rfc AND dep.id_tipo_de_declaracion = dec.id_tipo_de_declaracion;
+        LEFT JOIN v_dependientes dep ON dep.rfc = dec.rfc AND dep.id_tipo_de_declaracion = dec.id_tipo_de_declaracion
+        LEFT JOIN v_ingresos ing ON ing.rfc = dec.rfc AND ing.id_tipo_de_declaracion = dec.id_tipo_de_declaracion;/
 /

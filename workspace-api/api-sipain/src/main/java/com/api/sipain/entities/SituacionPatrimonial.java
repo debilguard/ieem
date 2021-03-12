@@ -9,7 +9,14 @@ public class SituacionPatrimonial {
 	DatosPareja datosPareja;
 	DatosDependienteEconomico datosDependienteEconomico;
 	Ingresos ingresos;
+	ActividadAnualAnterior actividadAnualAnterior;
 	
+	public ActividadAnualAnterior getActividadAnualAnterior() {
+		return actividadAnualAnterior;
+	}
+	public void setActividadAnualAnterior(ActividadAnualAnterior actividadAnualAnterior) {
+		this.actividadAnualAnterior = actividadAnualAnterior;
+	}
 	public Ingresos getIngresos() {
 		return ingresos;
 	}

@@ -25,6 +25,7 @@ import com.api.sipain.entities.DatosPareja;
 import com.api.sipain.entities.Declaracion;
 import com.api.sipain.entities.DependienteEconomico;
 import com.api.sipain.entities.Domicilios;
+import com.api.sipain.entities.EnajenacionBienes;
 import com.api.sipain.entities.ExperienciaLaboral;
 import com.api.sipain.entities.Ingreso;
 import com.api.sipain.entities.Ingresos;
@@ -39,11 +40,13 @@ import com.api.sipain.entities.ServiciosProfesionales;
 import com.api.sipain.entities.CorreoElectronico;
 import com.api.sipain.entities.TelefonoPersonal;
 import com.api.sipain.entities.Actividad;
+import com.api.sipain.entities.ActividadAnualAnterior;
 import com.api.sipain.entities.ActividadFinanciera;
 import com.api.sipain.entities.ActividadFinancieraCompleta;
 import com.api.sipain.entities.ActividadIngresos;
 import com.api.sipain.entities.ActividadLaboralSectorPrivado;
 import com.api.sipain.entities.ActividadLaboralSectorPublico;
+import com.api.sipain.entities.BienEnajenado;
 import com.api.sipain.entities.ClaveValor;
 import com.api.sipain.entities.Escolaridad;
 import com.api.sipain.entities.TelefonoGeneral;
@@ -87,6 +90,8 @@ public class DeclaracionRepository {
 				Map<String, Domicilio> rfcOrdenDomicilioDependienteMap = new HashMap<String, Domicilio>();
 				Map<String, Ingresos> rfcIngresosMap = new HashMap<String, Ingresos>();
 				Map<String, Ingreso> rfcOrdenIngresoMap = new HashMap<String, Ingreso>();
+				Map<String, ActividadAnualAnterior> rfcActividadAnualAnteriorMap = new HashMap<String, ActividadAnualAnterior>();
+				Map<String, ActividadAnualAnterior> rfcOrdenActividadAnualAnteriorMap = new HashMap<String, ActividadAnualAnterior>();
 				
 				while (rs.next()) {
 					String rfcDeclaracion = rs.getString("RFC");
@@ -684,6 +689,143 @@ public class DeclaracionRepository {
 							ingresos.getOtrosIngresos().getIngresos().add(ingreso);
 						}
 					}					
+					
+					// Actividad anual anterior
+					ActividadAnualAnterior actividadAnualAnterior = rfcActividadAnualAnteriorMap.get(rfcDeclaracion);
+					if (actividadAnualAnterior == null) {
+						actividadAnualAnterior = new ActividadAnualAnterior();
+						rfcActividadAnualAnteriorMap.put(rfcDeclaracion, actividadAnualAnterior);
+						
+						declaracion.getSituacionPatrimonial().setActividadAnualAnterior(actividadAnualAnterior);
+						
+						Salario remuneracionNetaCargoPublico = new Salario();
+						Salario otrosIngresosTotal = new Salario();
+						Salario ingresoNetoAnualDeclarante = new Salario();
+						Salario ingresoNetoAnualParejaDependiente = new Salario();
+						Salario totalIngresosNetosAnuales = new Salario();
+						
+						ActividadIngresos actividadIndustialComercialEmpresarial = new ActividadIngresos();
+						ActividadFinancieraCompleta actividadFinanciera = new ActividadFinancieraCompleta();
+						ServiciosProfesionales serviciosProfesionales = new ServiciosProfesionales();
+						EnajenacionBienes enajenacionBienes = new EnajenacionBienes();
+						OtrosIngresos otrosIngresos = new OtrosIngresos();
+						
+						remuneracionNetaCargoPublico.setValor(rs.getInt("DES_REMUNERACION_NETA"));
+						remuneracionNetaCargoPublico.setMoneda(MONEDA);
+						
+						otrosIngresosTotal.setValor(rs.getInt("DES_REMUNERACION_OTROS"));
+						otrosIngresosTotal.setMoneda(MONEDA);
+						
+						ingresoNetoAnualDeclarante.setValor(rs.getInt("DES_INGRESOS_NETO_DECLARANTE"));
+						ingresoNetoAnualDeclarante.setMoneda(MONEDA);
+						
+						ingresoNetoAnualParejaDependiente.setValor(rs.getInt("DES_INGRESOS_NETO_PAREJA"));
+						ingresoNetoAnualParejaDependiente.setMoneda(MONEDA);
+						
+						totalIngresosNetosAnuales.setValor(rs.getInt("DES_TOTAL_INGRESOS"));
+						totalIngresosNetosAnuales.setMoneda(MONEDA);
+
+						actividadAnualAnterior.setServidorPublicoAnioAnterior(rs.getInt("DES_TE_DESEMPENASTE_SI_NO") == 1);
+						actividadAnualAnterior.setAclaracionesObservaciones(rs.getString("DES_ACLARACIONES_OBSERVACIONES"));
+						actividadAnualAnterior.setFechaIngreso(rs.getDate("DES_FECHA_DE_INICIO"));
+						actividadAnualAnterior.setFechaConclusion(rs.getDate("DES_FECHA_DE_CONCLUSION"));
+						
+						actividadAnualAnterior.setRemuneracionNetaCargoPublico(remuneracionNetaCargoPublico);
+						actividadAnualAnterior.setOtrosIngresosTotal(otrosIngresosTotal);
+						actividadAnualAnterior.setActividadIndustrialComercialEmpresarial(actividadIndustialComercialEmpresarial);						
+						actividadAnualAnterior.setActividadFinanciera(actividadFinanciera);
+						actividadAnualAnterior.setServiciosProfesionales(serviciosProfesionales);
+						actividadAnualAnterior.setEnajenacionBienes(enajenacionBienes);
+						actividadAnualAnterior.setOtrosIngresos(otrosIngresos);
+						actividadAnualAnterior.setIngresoNetoAnualDeclarante(ingresoNetoAnualDeclarante);
+						actividadAnualAnterior.setIngresoNetoAnualParejaDependiente(ingresoNetoAnualParejaDependiente);
+						actividadAnualAnterior.setTotalIngresosNetosAnuales(totalIngresosNetosAnuales);
+					}
+					
+					String rfcOrdenActividadAnualAnterior = rs.getString("RFC") + "_" + rs.getString("DES_ORDEN");
+					ActividadAnualAnterior actividadAnteriorOrden = rfcOrdenActividadAnualAnteriorMap.get(rfcOrdenActividadAnualAnterior);
+					if (actividadAnteriorOrden == null) {
+						actividadAnteriorOrden = new ActividadAnualAnterior();
+						rfcOrdenActividadAnualAnteriorMap.put(rfcOrdenIngreso, actividadAnteriorOrden);
+						
+						Salario salario = new Salario();
+						salario.setMoneda(MONEDA);
+						
+						if (rs.getInt("DES_REMUNERACION_INDUSTRIAL") > 0) {
+							// Actividad industrial comercial empresarial
+							Actividad actividad = new Actividad();
+							salario.setValor(rs.getInt("DES_REMUNERACION_INDUSTRIAL"));
+							
+							actividad.setRemuneracion(salario);
+							actividad.setNombreRazonSocial(rs.getString("DES_NOMBRE_O_RAZON_SOCIAL"));
+							actividad.setTipoNegocio(rs.getString("DES_TIPO_DE_NEGOCIO"));
+							
+							if (actividadAnualAnterior.getActividadIndustrialComercialEmpresarial().getActividades() == null) {
+								actividadAnualAnterior.getActividadIndustrialComercialEmpresarial().setActividades(new ArrayList<Actividad>());
+							}
+							actividadAnualAnterior.getActividadIndustrialComercialEmpresarial().getActividades().add(actividad);
+						}
+
+						if (rs.getInt("DES_REMUNERACION_FINANCIERA") > 0) {
+							// Actividad financiera
+							ActividadFinanciera actividad = new ActividadFinanciera();
+							ClaveValor tipoInstrumento = new ClaveValor();
+							
+							salario.setValor(rs.getInt("DES_REMUNERACION_FINANCIERA"));
+							tipoInstrumento.setClave(rs.getString("DES_ID_ESPECIFICO_INVERSION"));
+							tipoInstrumento.setValor(rs.getString("DES_ESPECIFICO_INVERSION"));
+							
+							actividad.setRemuneracion(salario);
+							actividad.setTipoInstrumento(tipoInstrumento);
+							
+							if (actividadAnualAnterior.getActividadFinanciera().getActividades() == null) {
+								actividadAnualAnterior.getActividadFinanciera().setActividades(new ArrayList<ActividadFinanciera>());
+							}
+							actividadAnualAnterior.getActividadFinanciera().getActividades().add(actividad);
+						}
+						
+						if (rs.getInt("DES_REM_SERVICIOS_PROFESI") > 0) {
+							// Servicios profesionales
+							Servicio servicio = new Servicio();
+							salario.setValor(rs.getInt("DES_REM_SERVICIOS_PROFESI"));
+							
+							servicio.setRemuneracion(salario);
+							servicio.setTipoServicio(rs.getString("DES_TIPO_DE_SERVICIO"));
+							
+							if (actividadAnualAnterior.getServiciosProfesionales().getServicios() == null) {
+								actividadAnualAnterior.getServiciosProfesionales().setServicios(new ArrayList<Servicio>());
+							}
+							actividadAnualAnterior.getServiciosProfesionales().getServicios().add(servicio);
+						}
+
+						if (rs.getInt("DES_REM_ENAJENACION_DE_BI") > 0) {
+							// Enajenación de bienes
+							BienEnajenado enajenacion = new BienEnajenado();
+							salario.setValor(rs.getInt("des_rem_enagenacion_de_bi"));
+							
+							enajenacion.setRemuneracion(salario);
+							enajenacion.setTipoBienEnajenado(rs.getString("DES_ENAJENACION_DE_BIEN"));
+							
+							if (actividadAnualAnterior.getEnajenacionBienes().getBienes() == null) {
+								actividadAnualAnterior.getEnajenacionBienes().setBienes(new ArrayList<BienEnajenado>());
+							}
+							actividadAnualAnterior.getEnajenacionBienes().getBienes().add(enajenacion);
+						}
+
+						if (rs.getInt("DES_OTROS_INGRESOS_DECLARANTE") > 0) {
+							// Otros ingresos
+							Ingreso ingreso = new Ingreso();
+							salario.setValor(rs.getInt("DES_OTROS_INGRESOS_DECLARANTE"));
+							
+							ingreso.setRemuneracion(salario);
+							ingreso.setTipoIngreso(rs.getString("DES_OTROS_TIPO_DE_INGRESO"));
+							
+							if (actividadAnualAnterior.getOtrosIngresos().getIngresos() == null) {
+								actividadAnualAnterior.getOtrosIngresos().setIngresos(new ArrayList<Ingreso>());
+							}
+							actividadAnualAnterior.getOtrosIngresos().getIngresos().add(ingreso);
+						}
+					}	
 				}				
 				return list;
 			}
