@@ -160,6 +160,28 @@ CREATE OR REPLACE VIEW "DESARROLLO2"."V_INGRESOS" AS
     LEFT JOIN tsipain_especifico_inversion inv ON inv.id_especifico_inversion = ing.id_especifico_inversion
     LEFT JOIN tsipain_enajenacion_de_bien ena ON ena.id_enajenacion_de_bien = ing.id_enajenacion_de_bien;
 /
+CREATE OR REPLACE VIEW "DESARROLLO2"."V_DESEMPENO" AS 
+  SELECT
+    des.rfc, des.id_tipo_de_declaracion, des.fecha_del_movimiento, des.orden AS des_orden
+    , des.te_desenpenaste_si_no AS des_te_desempenaste_si_no, des.fecha_de_inicio AS des_fecha_de_inicio
+    , des.fecha_de_conclusion AS des_fecha_de_conclusion
+    , des.remuneracion_neta AS des_remuneracion_neta, des.remuneracion_industrial AS des_remuneracion_industrial
+    , des.remuneracion_servicios_profesi AS des_rem_servicios_profesi
+    , des.remuneracion_enagenacion_de_bi AS des_rem_enajenacion_de_bi
+    , des.remuneracion_financiera AS des_remuneracion_financiera, des.remuneracion_otros AS des_remuneracion_otros
+    , des.otro_especifico_inversion, des.otros_tipo_de_ingreso AS des_otros_tipo_de_ingreso
+    , des.otros_ingresos_declarante AS des_otros_ingresos_declarante
+    , des.tipo_de_servicio AS des_tipo_de_servicio, des.tipo_de_negocio AS des_tipo_de_negocio
+    , des.nombre_o_razon_social AS des_nombre_o_razon_social, des.ingresos_neto_declarante AS des_ingresos_neto_declarante
+    , des.ingresos_neto_pareja AS des_ingresos_neto_pareja, des.total_ingresos AS des_total_ingresos
+    , des.aclaraciones_observaciones AS des_aclaraciones_observaciones
+    , inv.id_especifico_inversion AS des_id_especifico_inversion, inv.especifico_inversion AS des_especifico_inversion
+    , ena.id_enajenacion_de_bien AS des_id_enajenacion_de_bien, ena.enajenacion_de_bien AS des_enajenacion_de_bien
+  FROM
+    tsipain_desempeno des
+    LEFT JOIN tsipain_especifico_inversion inv ON inv.id_especifico_inversion = des.id_especifico_inversion
+    LEFT JOIN tsipain_enajenacion_de_bien ena ON ena.id_enajenacion_de_bien = des.id_enajenacion_de_bien;
+/
 CREATE OR REPLACE FORCE VIEW "DESARROLLO2"."V_DECLARACION" AS 
   SELECT
         dec.id_tipo_de_declaracion, dec.rfc, dec.homoclave, dec.nombre, dec.primer_apellido, dec.segundo_apellido, dec.correo_electronico_institucio
@@ -203,6 +225,12 @@ CREATE OR REPLACE FORCE VIEW "DESARROLLO2"."V_DECLARACION" AS
         , ing.ing_otros_ingresos_declarante, ing.ing_tipo_de_servicio, ing.ing_tipo_de_negocio, ing.ing_nombre_o_razon_social
         , ing.ing_ingresos_neto_declarante, ing.ing_ingresos_neto_pareja, ing.ing_total_ingresos, ing.ing_aclaraciones_observaciones
         , ing.ing_id_especifico_inversion, ing.ing_especifico_inversion
+        , des.des_orden, des.des_te_desempenaste_si_no, des.des_remuneracion_neta, des.des_remuneracion_industrial, des.des_rem_servicios_profesi
+        , des.des_rem_enajenacion_de_bi, des.des_remuneracion_financiera, des.des_remuneracion_otros, des.des_otros_tipo_de_ingreso
+        , des.des_otros_ingresos_declarante, des.des_tipo_de_servicio, des.des_tipo_de_negocio, des.des_nombre_o_razon_social
+        , des.des_ingresos_neto_declarante, des.des_ingresos_neto_pareja, des.des_total_ingresos, des.des_aclaraciones_observaciones
+        , des.des_id_especifico_inversion, des.des_especifico_inversion, des.des_id_enajenacion_de_bien, des.des_enajenacion_de_bien
+        , des.des_fecha_de_inicio, des.des_fecha_de_conclusion
     FROM v_datos_generales dec
         LEFT JOIN v_domicilio dom ON dom.rfc = dec.rfc AND dec.id_tipo_de_declaracion = dom.id_tipo_de_declaracion
         LEFT JOIN v_escolaridad esc ON esc.rfc = dec.rfc AND esc.id_tipo_de_declaracion = dec.id_tipo_de_declaracion
@@ -210,5 +238,6 @@ CREATE OR REPLACE FORCE VIEW "DESARROLLO2"."V_DECLARACION" AS
         LEFT JOIN v_experiencia exp ON exp.rfc = dec.rfc AND exp.id_tipo_de_declaracion = dec.id_tipo_de_declaracion
         LEFT JOIN v_pareja par ON par.rfc = dec.rfc AND par.id_tipo_de_declaracion = dec.id_tipo_de_declaracion
         LEFT JOIN v_dependientes dep ON dep.rfc = dec.rfc AND dep.id_tipo_de_declaracion = dec.id_tipo_de_declaracion
-        LEFT JOIN v_ingresos ing ON ing.rfc = dec.rfc AND ing.id_tipo_de_declaracion = dec.id_tipo_de_declaracion;/
+        LEFT JOIN v_ingresos ing ON ing.rfc = dec.rfc AND ing.id_tipo_de_declaracion = dec.id_tipo_de_declaracion
+        LEFT JOIN v_desempeno des ON des.rfc = dec.rfc AND des.id_tipo_de_declaracion = dec.id_tipo_de_declaracion;
 /
